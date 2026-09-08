@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { Footer } from "@/components/footer";
-import { ProjectCover } from "@/components/project-cover";
 import { getProject, projects } from "@/lib/data";
 
 type PageProps = {
@@ -52,7 +52,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
         <p className="mt-10 font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
           Project {project.mission} · {project.year} · {project.kind}
         </p>
-        <h1 className="mt-4 font-display text-4xl tracking-[-0.05em] text-ink sm:text-6xl">
+        <h1 className="glow-title mt-4 font-display text-4xl tracking-[-0.05em] text-ink sm:text-6xl">
           {project.title}
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-muted">{project.description}</p>
@@ -82,14 +82,17 @@ export default async function CaseStudyPage({ params }: PageProps) {
           ) : null}
         </div>
 
-        <div
-          className="mt-12 overflow-hidden border border-white/8"
-          style={{
-            background: `linear-gradient(145deg, ${project.cover.from}, ${project.cover.to})`,
-          }}
-        >
-          <div className="aspect-[16/8]">
-            <ProjectCover motif={project.cover.motif} title={project.title} />
+        <div className="glow-card relative mt-12 overflow-hidden rounded-[1.6rem] border border-white/10">
+          <div className="relative aspect-[16/8]">
+            <Image
+              src={project.image}
+              alt={`${project.title} — ${project.subtitle}`}
+              fill
+              sizes="(min-width: 1024px) 960px, 100vw"
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/35 to-transparent" />
           </div>
         </div>
 

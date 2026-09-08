@@ -4,6 +4,8 @@ import { Experience } from "@/components/experience";
 import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { Projects } from "@/components/projects";
+import { StudioGallery } from "@/components/studio-gallery";
+import { Thoughts } from "@/components/thoughts";
 
 export default function Home() {
   return (
@@ -11,6 +13,8 @@ export default function Home() {
       <Hero />
       <About />
       <Projects />
+      <StudioGallery />
+      <Thoughts />
       <Experience />
       <Contact />
       <Footer />

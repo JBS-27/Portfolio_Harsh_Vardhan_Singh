@@ -17,7 +17,7 @@ export function Contact() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>
           <SectionHeading
-            index="04"
+            index="06"
             eyebrow="Transmission"
             title="Establish connection."
           />

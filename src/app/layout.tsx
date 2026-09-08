@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif, Syne } from "next/font/google";
 import { Atmosphere } from "@/components/atmosphere";
 import { CustomCursor } from "@/components/custom-cursor";
 import { Navbar } from "@/components/navbar";
@@ -15,6 +15,19 @@ const geist = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const instrument = Instrument_Serif({
+  variable: "--font-instrument",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -80,7 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-black" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${geistMono.variable} bg-black text-ink antialiased`}
+        className={`${geist.variable} ${geistMono.variable} ${syne.variable} ${instrument.variable} bg-black text-ink antialiased`}
       >
         <script
           type="application/ld+json"

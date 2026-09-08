@@ -15,7 +15,7 @@ export function Experience() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>
           <SectionHeading
-            index="03"
+            index="05"
             eyebrow="Flight history"
             title="A short record of where the work was done."
           />
@@ -25,7 +25,7 @@ export function Experience() {
           {timeline.map((item, index) => (
             <li key={`${item.title}-${item.org}`}>
               <FadeIn delay={index * 0.04}>
-                <div className="grid gap-4 py-8 sm:grid-cols-[160px_1fr]">
+                <div className="glow-card grid gap-4 rounded-2xl border border-transparent px-2 py-8 hover:border-white/8 sm:grid-cols-[160px_1fr]">
                   <div>
                     <p className="font-mono text-[10px] tracking-[0.2em] text-cyan uppercase">
                       {index === 0 && item.kind === "work"

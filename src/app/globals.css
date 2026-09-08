@@ -2,7 +2,8 @@
 
 @theme inline {
   --font-sans: var(--font-geist);
-  --font-display: var(--font-geist);
+  --font-display: var(--font-syne);
+  --font-serif: var(--font-instrument);
   --font-mono: var(--font-geist-mono);
 
   --color-bg: #000000;
@@ -43,7 +44,38 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-geist), ui-sans-serif, sans-serif;
+  font-family: var(--font-syne), var(--font-geist), ui-sans-serif, sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-instrument), Georgia, "Times New Roman", serif;
+}
+
+.glow-title {
+  text-shadow:
+    0 0 18px rgb(196 181 253 / 0.28),
+    0 0 42px rgb(124 58 237 / 0.22),
+    0 0 72px rgb(34 211 238 / 0.1);
+}
+
+.glow-card {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 18px 50px rgb(0 0 0 / 0.45),
+    0 0 40px rgb(124 58 237 / 0.12);
+  transition:
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.5s ease;
+}
+
+.glow-card:hover,
+.glow-card:focus-visible {
+  box-shadow:
+    0 0 0 1px rgb(34 211 238 / 0.35),
+    0 24px 70px rgb(0 0 0 / 0.5),
+    0 0 48px rgb(124 58 237 / 0.38),
+    0 0 90px rgb(34 211 238 / 0.12);
 }
 
 .grad-text {

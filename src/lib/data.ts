@@ -37,6 +37,8 @@ export const site = {
 export const navLinks = [
   { href: "/#work", label: "Work" },
   { href: "/#about", label: "About" },
+  { href: "/#studio", label: "Studio" },
+  { href: "/#notes", label: "Notes" },
   { href: "/#experience", label: "Experience" },
   { href: "/#contact", label: "Contact" },
 ] as const;
@@ -91,6 +93,7 @@ export type Project = {
   tags: string[];
   liveUrl?: string;
   repoUrl?: string;
+  image: string;
   cover: {
     from: string;
     to: string;
@@ -121,6 +124,7 @@ export const projects: Project[] = [
     tags: ["TanStack Start", "React 19", "Postgres", "Better Auth", "AI"],
     liveUrl: "https://nirmaan-the-ultimate-solution.vercel.app/",
     repoUrl: "https://github.com/JBS-27/Nirmaan_The_Ultimate_Solution",
+    image: "/projects/nirmaan-build.jpg",
     cover: { from: "#04010a", to: "#14082c", motif: "blueprint" },
     caseStudy: {
       problem:
@@ -174,6 +178,7 @@ export const projects: Project[] = [
       "A ~190k-parameter ensemble that forecasts five-day air quality across 26 Indian cities at 86.6% bucket accuracy — deployed as a sub-second Streamlit dashboard.",
     tags: ["Python", "TensorFlow", "scikit-learn", "Streamlit", "SHAP"],
     repoUrl: "https://github.com/JBS-27/Air_Pollution_monitoring_system",
+    image: "/projects/aqi.jpg",
     cover: { from: "#01040c", to: "#0a1838", motif: "wave" },
     caseStudy: {
       problem:
@@ -226,6 +231,7 @@ export const projects: Project[] = [
       "A full-stack loan platform with RBAC, JWT sessions, and indexed MongoDB queries — verification workflows that cut turnaround by 30%.",
     tags: ["Next.js", "Tailwind", "MongoDB", "JWT", "REST"],
     repoUrl: "https://github.com/JBS-27/Loan_Application_and_Verification",
+    image: "/projects/lendflow.jpg",
     cover: { from: "#07060c", to: "#1a1028", motif: "ledger" },
     caseStudy: {
       problem:
@@ -270,6 +276,7 @@ export const projects: Project[] = [
       "An end-to-end agent that reads a resume, extracts a structured profile, and is being built toward job-fit, tailored answers, and human-reviewed form fill.",
     tags: ["FastAPI", "React", "MongoDB", "LLMs", "Playwright"],
     repoUrl: "https://github.com/JBS-27/agentic-job-application-platform",
+    image: "/projects/agentic.jpg",
     cover: { from: "#080414", to: "#1c1040", motif: "agent" },
     caseStudy: {
       problem:
@@ -322,6 +329,7 @@ export const projects: Project[] = [
     tags: ["JavaScript", "WebGL / Canvas", "Vercel"],
     liveUrl: "https://invertedearthvisualization.vercel.app",
     repoUrl: "https://github.com/JBS-27/Inverted_Earth_Visualization",
+    image: "/projects/inverted-earth.jpg",
     cover: { from: "#000208", to: "#0c1830", motif: "globe" },
     caseStudy: {
       problem:
@@ -362,6 +370,7 @@ export const projects: Project[] = [
     tags: ["JavaScript", "Canvas", "Interaction"],
     liveUrl: "https://selective-gravity-lab.vercel.app",
     repoUrl: "https://github.com/JBS-27/Selective-gravity-lab",
+    image: "/projects/selective-gravity.jpg",
     cover: { from: "#08060a", to: "#1a1014", motif: "orbit" },
     caseStudy: {
       problem:
@@ -520,6 +529,96 @@ export const timeline: TimelineItem[] = [
     bullets: [
       "State-level award for leadership, community service, and teamwork.",
     ],
+  },
+];
+
+export type StudioPiece = {
+  id: string;
+  title: string;
+  caption: string;
+  src: string;
+  href: string;
+};
+
+export const studioPieces: StudioPiece[] = [
+  {
+    id: "concept-14",
+    title: "Concept #14",
+    caption: "A billboard campaign built for India’s streets — Manyavar sets the vow, Tanishq finishes the sentence.",
+    src: "/studio/concept-14.jpg",
+    href: "https://x.com/singharshll52",
+  },
+  {
+    id: "concept-13a",
+    title: "Concept #13",
+    caption: "The crux of grabbing attention for brands today. One idea. No second glance.",
+    src: "/studio/concept-13a.jpg",
+    href: "https://x.com/singharshll52",
+  },
+  {
+    id: "concept-13b",
+    title: "Concept #13 · street",
+    caption: "Same campaign, closer to the road — type that has to land at 60 km/h.",
+    src: "/studio/concept-13b.jpg",
+    href: "https://x.com/singharshll52",
+  },
+  {
+    id: "concept-12",
+    title: "Concept #12",
+    caption: "Amul sets the context. Godrej brings the security. Zepto delivers the night.",
+    src: "/studio/concept-12.jpg",
+    href: "https://x.com/singharshll52",
+  },
+  {
+    id: "nirmaan-x",
+    title: "Nirmaan",
+    caption: "Building a house? Most people lose the materials, the crew, and the envelope. This is the twin.",
+    src: "/studio/nirmaan-x.jpg",
+    href: "https://x.com/singharshll52",
+  },
+];
+
+export type Thought = {
+  id: string;
+  title: string;
+  quote: string;
+  body: string;
+  date: string;
+  href: string;
+};
+
+export const thoughts: Thought[] = [
+  {
+    id: "dots",
+    title: "The line they form",
+    quote: "It is hard to face the dots... but trust the beauty of the line they form.",
+    body: "Posted while the semester was still mid-air. The point was never the isolated days — exam, outreach, silence — but the shape they make only after you keep walking.",
+    date: "Jun 2026",
+    href: "https://www.linkedin.com/posts/harsh-vardhan-singh-4b6a45282_%F0%9D%99%84%F0%9D%99%A9-%F0%9D%99%9E%F0%9D%99%A8-%F0%9D%99%9D%F0%9D%99%96%F0%9D%99%A7%F0%9D%99%99-%F0%9D%99%A9%F0%9D%99%A4-%F0%9D%99%9B%F0%9D%99%96%F0%9D%99%98%F0%9D%99%9A-%F0%9D%99%A9%F0%9D%99%9D%F0%9D%99%9A-activity-7468608983252131840-s76A",
+  },
+  {
+    id: "time",
+    title: "Good things take time",
+    quote: "Yes, it takes time for good things to happen.",
+    body: "A short line I meant as a reminder, not a slogan. Work that has to survive contact with reality does not arrive on the first sprint.",
+    date: "Apr 2026",
+    href: "https://www.linkedin.com/posts/harsh-vardhan-singh-4b6a45282_%F0%9D%99%94%F0%9D%99%9A%F0%9D%99%A8-%F0%9D%99%9E%F0%9D%99%A9-%F0%9D%99%A9%F0%9D%99%96%F0%9D%99%A0%F0%9D%99%9A%F0%9D%99%A8-%F0%9D%99%A9%F0%9D%99%9E%F0%9D%99%A2%F0%9D%99%9A-%F0%9D%99%9B%F0%9D%99%A4%F0%9D%99%A7-activity-7455646214169190400-UfN4",
+  },
+  {
+    id: "wrappers",
+    title: "Beyond LLM wrappers",
+    quote: "This isn’t just automation — it’s orchestration. Agents collaborating like colleagues, not responding like tools.",
+    body: "After Sam Bhagwat’s Principles of Building AI Agents I wrote about leaving chatbot wrappers for graph-based workflows: dynamic planning, tool access, hierarchical memory, and a human still in the loop. Resume in. Structured profile out. The job is finished, not summarized.",
+    date: "Apr 2026",
+    href: "https://www.linkedin.com/posts/harsh-vardhan-singh-4b6a45282_agenticai-ai-machinelearning-activity-7450096864848437248-8aLv",
+  },
+  {
+    id: "end",
+    title: "The end that matters",
+    quote: "It is the start that never matters, but the end that always matters in life.",
+    body: "A note I left on a post about turning around. Direction can change late. What you finish is the only record that stays.",
+    date: "Apr 2026",
+    href: "https://www.linkedin.com/posts/s-k-varshney-5059b24_no-matter-how-long-you-have-traveled-in-wrong-activity-7453967840757452800-5mOs",
   },
 ];
 

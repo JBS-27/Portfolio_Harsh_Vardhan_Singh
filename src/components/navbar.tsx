@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { navLinks, site } from "@/lib/data";
 import { cx } from "@/lib/utils";
 
-const sections = ["work", "about", "experience", "contact"];
+const sections = ["work", "about", "studio", "notes", "experience", "contact"];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -55,7 +55,7 @@ export function Navbar() {
           <span className="sr-only">{site.name}</span>
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-4 lg:gap-6 md:flex" aria-label="Primary">
           {navLinks.map((link) => {
             const id = link.href.replace("/#", "");
             return (

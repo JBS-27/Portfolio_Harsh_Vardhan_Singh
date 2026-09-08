@@ -36,14 +36,14 @@ export function IdentityMark() {
         <TypeAnimation
           sequence={[
             'THE\nINITIATOR',
-            2500, // Significant pause
+            2000, // Significant pause
             'HARSH\nVARDHAN\nSINGH',
-            4000, // Pause before repeating
+            2500, // Pause before repeating
           ]}
           wrapper="span"
           cursor={true}
-          speed={40}
-          deletionSpeed={50}
+          speed={30}
+          deletionSpeed={40}
           repeat={Infinity}
           className="grad-text absolute inset-0 block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem] whitespace-pre-line"
         />

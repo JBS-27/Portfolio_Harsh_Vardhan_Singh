@@ -129,7 +129,9 @@ export function Atmosphere() {
       ctx.clearRect(0, 0, width, height);
       parallax.x += (parallax.tx - parallax.x) * 0.04;
       parallax.y += (parallax.ty - parallax.y) * 0.04;
-      const radius = fine ? 190 : 108;
+      
+      // DECREASED RADIUS: Was 190 : 108. Now 80 : 50 for a tighter hover effect.
+      const radius = fine ? 80 : 50; 
       const radiusSq = radius * radius;
 
       for (const star of stars) {

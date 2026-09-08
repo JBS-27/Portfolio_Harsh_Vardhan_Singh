@@ -108,15 +108,7 @@ export function Hero() {
               >
                 Enter work
               </MagneticButton>
-              <div className="relative h-28 w-24 overflow-hidden rounded-3xl border border-white/15 shadow-[0_0_28px_rgb(124_58_237/0.2)] sm:h-36 sm:w-28">
-                <Image
-                  src={site.portrait.src}
-                  alt={site.portrait.alt}
-                  fill
-                  sizes="112px"
-                  className="object-cover object-[50%_18%]"
-                />
-              </div>
+              
             </motion.div>
           </motion.div>
 

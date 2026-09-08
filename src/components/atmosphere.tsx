@@ -78,6 +78,16 @@ export function Atmosphere() {
       surface.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (stars.length === 0) seed();
+      else {
+    // FIX: Randomly reposition stars that are now out-of-bounds 
+    // so they don't all clump in the top-left corner
+    for (const star of stars) {
+      if (star.x > width || star.y > height) {
+        star.x = Math.random() * width;
+        star.y = Math.random() * height;
+      }
+    }
+  }
     }
 
     function onMove(event: MouseEvent) {

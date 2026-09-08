@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Syne } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Atmosphere } from "@/components/atmosphere";
 import { CustomCursor } from "@/components/custom-cursor";
 import { Navbar } from "@/components/navbar";
-import { Providers } from "@/components/providers";
 import { site } from "@/lib/data";
 import "./globals.css";
 
@@ -14,12 +14,6 @@ const geist = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const syne = Syne({
-  variable: "--font-syne",
   subsets: ["latin"],
   display: "swap",
 });
@@ -62,10 +56,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-    { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },
-  ],
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
 };
@@ -87,30 +78,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className="dark"
-      suppressHydrationWarning
-    >
+    <html lang="en" className="bg-black" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${geistMono.variable} ${syne.variable} bg-bg text-ink antialiased`}
+        className={`${geist.variable} ${geistMono.variable} bg-black text-ink antialiased`}
       >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers>
-          <a
-            href="#main"
-            className="absolute top-4 left-4 z-50 -translate-y-16 rounded-full bg-accent px-4 py-2 text-bg transition-transform focus:translate-y-0"
-          >
-            Skip to content
-          </a>
-          <div className="noise" aria-hidden />
-          <CustomCursor />
-          <Navbar />
-          {children}
-        </Providers>
+        <a
+          href="#main"
+          className="absolute top-4 left-4 z-50 -translate-y-16 bg-cyan px-4 py-2 text-black transition-transform focus:translate-y-0"
+        >
+          Skip to content
+        </a>
+        <Atmosphere />
+        <CustomCursor />
+        <Navbar />
+        <div className="relative z-10">{children}</div>
       </body>
     </html>
   );

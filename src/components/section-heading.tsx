@@ -17,16 +17,16 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div className={cx("max-w-3xl", className)}>
-      <p className="mb-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.22em] text-faint">
-        <span className="text-accent">{index}</span>
-        <span className="h-px w-8 bg-line" />
+      <p className="mb-5 flex items-center gap-4 font-mono text-[10px] tracking-[0.28em] text-faint uppercase">
+        <span className="text-cyan">{index}</span>
+        <span className="h-px w-10 bg-white/15" />
         {eyebrow}
       </p>
-      <h2 className="font-display text-3xl leading-[1.1] tracking-tight text-ink sm:text-5xl">
+      <h2 className="font-display text-4xl leading-[0.95] font-medium tracking-[-0.04em] text-ink sm:text-6xl">
         {title}
       </h2>
       {description ? (
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+        <p className="mt-5 max-w-xl text-base leading-relaxed text-muted">
           {description}
         </p>
       ) : null}

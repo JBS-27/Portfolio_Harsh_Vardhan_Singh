@@ -16,18 +16,25 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#0a0a0a",
-          color: "#f5f5f5",
+          background: "#000000",
+          color: "#f4f4f5",
         }}
       >
-        <div style={{ fontSize: 22, letterSpacing: 4, color: "#22d3ee" }}>
-          HVS · PORTFOLIO
+        <div style={{ fontSize: 20, letterSpacing: 6, color: "#22d3ee" }}>
+          ORBIT // 001
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 76, lineHeight: 0.95, fontWeight: 700 }}>
-            Harsh Vardhan
-            <br />
-            Singh
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              fontSize: 86,
+              lineHeight: 0.88,
+              fontWeight: 500,
+            }}
+          >
+            <div>HARSH</div>
+            <div>SINGH</div>
           </div>
           <div style={{ marginTop: 24, fontSize: 28, color: "#a3a3a3", maxWidth: 860 }}>
             {site.tagline}

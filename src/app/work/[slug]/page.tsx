@@ -39,25 +39,23 @@ export default async function CaseStudyPage({ params }: PageProps) {
   const { caseStudy } = project;
 
   return (
-    <main id="main" className="pt-28 pb-10">
-      <article className="mx-auto max-w-4xl px-5 sm:px-8">
+    <main id="main" className="pt-24 pb-10">
+      <article className="mx-auto max-w-5xl px-5 sm:px-8">
         <Link
           href="/#work"
-          className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink"
+          className="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] text-faint uppercase hover:text-ink"
         >
-          <ArrowLeft className="size-4" />
-          All work
+          <ArrowLeft className="size-3.5" />
+          All missions
         </Link>
 
-        <p className="mt-10 font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
-          {project.year} · {project.subtitle}
+        <p className="mt-10 font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+          Project {project.mission} · {project.year} · {project.kind}
         </p>
-        <h1 className="mt-3 font-display text-4xl tracking-tight text-ink sm:text-6xl">
+        <h1 className="mt-4 font-display text-4xl tracking-[-0.05em] text-ink sm:text-6xl">
           {project.title}
         </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          {project.description}
-        </p>
+        <p className="mt-4 max-w-2xl text-lg text-muted">{project.description}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">
           {project.liveUrl ? (
@@ -65,9 +63,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm text-bg hover:bg-accent hover:text-bg"
+              className="inline-flex items-center gap-2 bg-white px-4 py-2 text-sm text-black"
             >
-              Live demo
+              Live
               <ArrowUpRight className="size-4" />
             </a>
           ) : null}
@@ -76,7 +74,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
               href={project.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm text-ink hover:border-accent/50"
+              className="inline-flex items-center gap-2 border border-white/12 px-4 py-2 text-sm text-ink"
             >
               Repository
               <ArrowUpRight className="size-4" />
@@ -85,7 +83,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </div>
 
         <div
-          className="mt-12 overflow-hidden rounded-[2rem] border border-line"
+          className="mt-12 overflow-hidden border border-white/8"
           style={{
             background: `linear-gradient(145deg, ${project.cover.from}, ${project.cover.to})`,
           }}
@@ -97,68 +95,74 @@ export default async function CaseStudyPage({ params }: PageProps) {
 
         <section className="mt-16 grid gap-10 sm:grid-cols-2">
           <div>
-            <h2 className="font-display text-2xl text-ink">Problem</h2>
+            <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+              Mission
+            </h2>
             <p className="mt-3 leading-relaxed text-muted">{caseStudy.problem}</p>
           </div>
           <div>
-            <h2 className="font-display text-2xl text-ink">Role & approach</h2>
+            <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+              Context
+            </h2>
             <p className="mt-3 leading-relaxed text-muted">{caseStudy.role}</p>
           </div>
         </section>
 
-        <ol className="mt-8 space-y-3">
-          {caseStudy.approach.map((step, index) => (
-            <li
-              key={step}
-              className="rounded-2xl border border-line bg-surface px-5 py-4 text-muted"
-            >
-              <span className="mr-3 font-mono text-xs text-accent">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              {step}
-            </li>
-          ))}
-        </ol>
+        <section className="mt-14">
+          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+            System
+          </h2>
+          <ol className="mt-5 space-y-px bg-white/8">
+            {caseStudy.approach.map((step, index) => (
+              <li key={step} className="bg-black px-5 py-4 text-muted">
+                <span className="mr-3 font-mono text-[10px] text-violet">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </section>
 
-        <section className="mt-16">
-          <h2 className="font-display text-2xl text-ink">Key decisions</h2>
-          <div className="mt-6 grid gap-4">
+        <section className="mt-14">
+          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+            Process
+          </h2>
+          <div className="mt-5 divide-y divide-white/8 border-y border-white/8">
             {caseStudy.decisions.map((decision) => (
-              <div
-                key={decision.title}
-                className="rounded-3xl border border-line bg-surface p-6"
-              >
-                <h3 className="font-display text-xl text-ink">{decision.title}</h3>
+              <div key={decision.title} className="py-6">
+                <h3 className="text-xl text-ink">{decision.title}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{decision.body}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-16">
-          <h2 className="font-display text-2xl text-ink">Results</h2>
-          <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <section className="mt-14">
+          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+            Result
+          </h2>
+          <dl className="mt-5 grid grid-cols-2 gap-px bg-white/8 sm:grid-cols-4">
             {caseStudy.results.map((result) => (
-              <div
-                key={result.label}
-                className="rounded-2xl border border-line bg-surface px-4 py-5"
-              >
-                <dt className="text-[11px] uppercase tracking-[0.14em] text-faint">
+              <div key={result.label} className="bg-black px-4 py-5">
+                <dt className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
                   {result.label}
                 </dt>
-                <dd className="mt-2 font-display text-xl text-ink">{result.value}</dd>
+                <dd className="mt-2 text-xl text-ink">{result.value}</dd>
               </div>
             ))}
           </dl>
         </section>
 
-        <section className="mt-16 mb-10">
-          <h2 className="font-display text-2xl text-ink">Tech used</h2>
+        <section className="mt-14 mb-10">
+          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+            Technology
+          </h2>
           <div className="mt-4 flex flex-wrap gap-2">
             {caseStudy.tech.map((item) => (
               <span
                 key={item}
-                className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm text-muted"
+                className="border border-white/10 px-3 py-1.5 font-mono text-[11px] text-muted"
               >
                 {item}
               </span>

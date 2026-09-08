@@ -3,27 +3,30 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { navLinks, site } from "@/lib/data";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { cx } from "@/lib/utils";
 
+const sections = ["work", "about", "experience", "contact"];
+
 export function Navbar() {
-  const reduce = useReducedMotion();
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("");
 
   useEffect(() => {
-    let last = window.scrollY;
-
     function onScroll() {
-      const current = window.scrollY;
-      setScrolled(current > 8);
-      setHidden(current > last && current > 80);
-      last = current;
+      setScrolled(window.scrollY > 12);
+      const marker = [...sections]
+        .reverse()
+        .find((id) => {
+          const node = document.getElementById(id);
+          return node ? node.getBoundingClientRect().top < 140 : false;
+        });
+      setActive(marker ?? "");
     }
 
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -36,50 +39,50 @@ export function Navbar() {
   }, [open]);
 
   return (
-    <motion.header
+    <header
       className={cx(
-        "fixed inset-x-0 top-0 z-40 transition-colors",
-        scrolled
-          ? "border-b border-line/80 bg-bg/75 backdrop-blur-xl"
-          : "bg-transparent",
+        "fixed inset-x-0 top-0 z-40 transition-colors duration-500",
+        scrolled ? "bg-black/55 backdrop-blur-md" : "bg-transparent",
       )}
-      animate={reduce ? undefined : { y: hidden && !open ? -88 : 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 sm:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
         <Link
           href="/"
-          className="font-display text-lg tracking-tight text-ink"
+          className="font-mono text-[11px] tracking-[0.28em] text-ink uppercase"
           onClick={() => setOpen(false)}
         >
           {site.initials}
           <span className="sr-only">{site.name}</span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm text-muted transition-colors hover:text-ink"
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
+          {navLinks.map((link) => {
+            const id = link.href.replace("/#", "");
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cx(
+                  "relative font-mono text-[10px] tracking-[0.22em] uppercase transition-colors",
+                  active === id ? "text-ink" : "text-faint hover:text-ink",
+                )}
+              >
+                {link.label}
+                {active === id ? (
+                  <span className="absolute -bottom-2 left-0 h-px w-full grad-line" />
+                ) : null}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <span className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-[11px] font-medium text-muted lg:inline-flex">
-            <span className="relative flex size-2">
-              <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-60" />
-              <span className="relative size-2 rounded-full bg-accent" />
-            </span>
-            Available for work
+        <div className="flex items-center gap-4">
+          <span className="hidden font-mono text-[10px] tracking-[0.2em] text-cyan uppercase lg:inline">
+            {`SYS // ONLINE`}
           </span>
-          <ThemeToggle />
           <button
             type="button"
-            className="grid size-10 place-items-center rounded-full border border-line bg-surface md:hidden"
+            className="grid size-9 place-items-center border border-white/10 text-ink md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -95,28 +98,26 @@ export function Navbar() {
           <motion.nav
             id="mobile-nav"
             aria-label="Mobile"
-            className="border-t border-line bg-bg md:hidden"
+            className="border-t border-white/8 bg-black md:hidden"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28 }}
           >
-            <div className="flex flex-col gap-1 px-5 py-6">
+            <div className="flex flex-col px-5 py-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="rounded-xl px-3 py-3 text-lg text-ink"
+                  className="py-3 font-mono text-sm tracking-[0.18em] text-ink uppercase"
                   onClick={() => setOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
-              <p className="mt-3 px-3 text-sm text-muted">{site.availability}</p>
             </div>
           </motion.nav>
         ) : null}
       </AnimatePresence>
-    </motion.header>
+    </header>
   );
 }

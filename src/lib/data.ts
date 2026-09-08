@@ -12,13 +12,18 @@ export const site = {
   personality:
     "CSE @ IIIT Surat. I architect like an agent should do real work, then design like the piece has to land at 60 km/h.",
   availability: "Available for internships, freelance, and collaborations",
-  currently: "Freelance engineer at Xelron AI · building agentic systems on the side",
+  currently: "Contractual SDE @ Xelron AI",
+  currentRole: {
+    label: "Currently building",
+    title: "Contractual SDE",
+    org: "Xelron AI",
+  },
   location: "Surat, India",
-  email: "ui23cs25@iiitsurat.ac.in",
+  email: "singharshll52@gmail.com",
   phone: "+91 76178 11894",
   resumeUrl: "/resume",
   portrait: {
-    src: "https://avatars.githubusercontent.com/u/184811173?v=4",
+    src: "/portrait.jpg",
     alt: "Harsh Vardhan Singh",
   },
   url: "https://harshvardhansingh.dev",
@@ -32,15 +37,23 @@ export const site = {
 export const navLinks = [
   { href: "/#work", label: "Work" },
   { href: "/#about", label: "About" },
-  { href: "/#skills", label: "Skills" },
+  { href: "/#experience", label: "Experience" },
   { href: "/#contact", label: "Contact" },
 ] as const;
+
+export const telemetry = {
+  mission: "ORBIT // 001",
+  lat: "21.17 N",
+  lng: "72.83 E",
+  system: "SYS // ONLINE",
+  vehicle: "HVS-01",
+} as const;
 
 export const about = {
   lead: "I like systems that hold together — and surfaces that refuse to be ignored.",
   paragraphs: [
     "I’m a Computer Science undergrad at IIIT Surat (2023–2027) with a 9.71 CGPA. I care about the whole stack: the model that forecasts, the API that doesn’t leak, the interface that loads in under two seconds, and the type that still reads from across a street.",
-    "Recently I trained physical-AI data at Deccan AI, then joined Xelron AI as a freelancer. In public I write about moving past LLM wrappers toward agents that actually complete a job — resume in, structured profile out, human still in the loop. That thesis is now a product I’m building.",
+    "Recently I trained physical-AI data at Deccan AI, then joined Xelron AI as a Contractual SDE. In public I write about moving past LLM wrappers toward agents that actually complete a job — resume in, structured profile out, human still in the loop. That thesis is now a product I’m building.",
     "Outside class I design advertisement banners and billboard-style pieces. It’s how I think about attention: one idea, huge type, no second chance. The same instinct shows up in my visual experiments — inverted earth, selective gravity, luminous scenes.",
   ],
   outside:
@@ -63,11 +76,16 @@ export type ProjectCoverMotif =
   | "globe"
   | "orbit";
 
+export type ProjectKind = "featured" | "secondary" | "experimental";
+
 export type Project = {
   slug: string;
   title: string;
   subtitle: string;
   year: string;
+  mission: string;
+  kind: ProjectKind;
+  role: string;
   featured?: boolean;
   description: string;
   tags: string[];
@@ -94,13 +112,16 @@ export const projects: Project[] = [
     title: "Nirmaan",
     subtitle: "Construction OS",
     year: "2026",
+    mission: "01",
+    kind: "featured",
+    role: "Solo builder",
     featured: true,
     description:
       "A digital twin for Indian residential sites — materials, crew, bills, cash envelope, and a project-aware assistant that answers from the ledger.",
     tags: ["TanStack Start", "React 19", "Postgres", "Better Auth", "AI"],
     liveUrl: "https://nirmaan-the-ultimate-solution.vercel.app/",
     repoUrl: "https://github.com/JBS-27/Nirmaan_The_Ultimate_Solution",
-    cover: { from: "#0c1f1a", to: "#14332a", motif: "blueprint" },
+    cover: { from: "#04010a", to: "#14082c", motif: "blueprint" },
     caseStudy: {
       problem:
         "Homeowners and small builders in India still run sites on WhatsApp, notebooks, and memory. Cement leftover, crew attendance, and the cash envelope live in different heads — so overruns show up after the money is gone.",
@@ -145,12 +166,15 @@ export const projects: Project[] = [
     title: "5-Day AQI Forecast",
     subtitle: "CNN-LSTM-GRU + Attention",
     year: "2026",
+    mission: "02",
+    kind: "featured",
+    role: "Group project",
     featured: true,
     description:
       "A ~190k-parameter ensemble that forecasts five-day air quality across 26 Indian cities at 86.6% bucket accuracy — deployed as a sub-second Streamlit dashboard.",
     tags: ["Python", "TensorFlow", "scikit-learn", "Streamlit", "SHAP"],
     repoUrl: "https://github.com/JBS-27/Air_Pollution_monitoring_system",
-    cover: { from: "#0b1c2c", to: "#16324a", motif: "wave" },
+    cover: { from: "#01040c", to: "#0a1838", motif: "wave" },
     caseStudy: {
       problem:
         "City-level AQI is noisy, gappy, and local. A model that looks good on a national average still fails Patna, and a dashboard that takes ten seconds is useless to a commuter.",
@@ -195,11 +219,14 @@ export const projects: Project[] = [
     title: "LendFlow",
     subtitle: "Loan application & verification",
     year: "2026",
+    mission: "03",
+    kind: "secondary",
+    role: "Full-stack",
     description:
       "A full-stack loan platform with RBAC, JWT sessions, and indexed MongoDB queries — verification workflows that cut turnaround by 30%.",
     tags: ["Next.js", "Tailwind", "MongoDB", "JWT", "REST"],
     repoUrl: "https://github.com/JBS-27/Loan_Application_and_Verification",
-    cover: { from: "#1a1408", to: "#2c2412", motif: "ledger" },
+    cover: { from: "#07060c", to: "#1a1028", motif: "ledger" },
     caseStudy: {
       problem:
         "Loan desks still re-key the same applicant into three tools. Errors compound, sessions get hijacked, and a slow frontend makes the whole desk feel broken.",
@@ -236,11 +263,14 @@ export const projects: Project[] = [
     title: "Agentic Job Platform",
     subtitle: "Beyond LLM wrappers",
     year: "2026",
+    mission: "04",
+    kind: "secondary",
+    role: "Author",
     description:
       "An end-to-end agent that reads a resume, extracts a structured profile, and is being built toward job-fit, tailored answers, and human-reviewed form fill.",
     tags: ["FastAPI", "React", "MongoDB", "LLMs", "Playwright"],
     repoUrl: "https://github.com/JBS-27/agentic-job-application-platform",
-    cover: { from: "#161022", to: "#2a1d3d", motif: "agent" },
+    cover: { from: "#080414", to: "#1c1040", motif: "agent" },
     caseStudy: {
       problem:
         "Most ‘AI apply’ tools are a prompt around a chat model. They don’t extract a real profile, they don’t match a job, and they definitely shouldn’t submit anything without a human.",
@@ -284,12 +314,15 @@ export const projects: Project[] = [
     title: "Inverted Earth",
     subtitle: "Visual experiment",
     year: "2026",
+    mission: "05",
+    kind: "experimental",
+    role: "Designer-engineer",
     description:
       "A large-canvas visualization that flips the familiar planet — built to practice presence, scale, and the kind of image that works like a poster.",
     tags: ["JavaScript", "WebGL / Canvas", "Vercel"],
     liveUrl: "https://invertedearthvisualization.vercel.app",
     repoUrl: "https://github.com/JBS-27/Inverted_Earth_Visualization",
-    cover: { from: "#071018", to: "#123044", motif: "globe" },
+    cover: { from: "#000208", to: "#0c1830", motif: "globe" },
     caseStudy: {
       problem:
         "I wanted a piece that behaves like a billboard: one strange, confident image, not a dashboard of controls.",
@@ -321,12 +354,15 @@ export const projects: Project[] = [
     title: "Selective Gravity Lab",
     subtitle: "Interactive physics sketch",
     year: "2026",
+    mission: "06",
+    kind: "experimental",
+    role: "Solo",
     description:
       "A lab where gravity isn’t universal — a playground for attention, motion, and the rules you choose to break on a page.",
     tags: ["JavaScript", "Canvas", "Interaction"],
     liveUrl: "https://selective-gravity-lab.vercel.app",
     repoUrl: "https://github.com/JBS-27/Selective-gravity-lab",
-    cover: { from: "#120c08", to: "#2a1c10", motif: "orbit" },
+    cover: { from: "#08060a", to: "#1a1014", motif: "orbit" },
     caseStudy: {
       problem:
         "Most physics sketches demonstrate a textbook. I wanted one that feels like a rule you can edit — closer to how I think about ads and interfaces.",
@@ -436,12 +472,12 @@ export type TimelineItem = {
 export const timeline: TimelineItem[] = [
   {
     kind: "work",
-    title: "Freelance Engineer",
+    title: "Contractual SDE",
     org: "Xelron AI",
     dates: "Aug 2026 — Present",
     location: "Remote",
     bullets: [
-      "Contributing as a freelance engineer at an AI lab focused on automation and enterprise adoption.",
+      "Contributing as a Contractual SDE at an AI lab focused on automation and enterprise adoption.",
       "Applying full-stack and AI-systems instincts to real product work while staying in the loop on agent design.",
     ],
   },

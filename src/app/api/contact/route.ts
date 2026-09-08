@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   const resendKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL ?? "ui23cs25@iiitsurat.ac.in";
+  const to = process.env.CONTACT_TO_EMAIL ?? "singharshll52@gmail.com";
   const formspree = process.env.FORMSPREE_FORM_ID;
 
   if (resendKey) {

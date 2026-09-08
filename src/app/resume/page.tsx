@@ -26,7 +26,7 @@ export default function ResumePage() {
           </Link>
           <a
             href="/Harsh_Vardhan_Singh_Resume.pdf"
-            className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm text-ink hover:border-accent/50"
+            className="inline-flex items-center gap-2 border border-white/12 px-4 py-2 text-sm text-ink hover:border-cyan/40"
           >
             <FileDown className="size-4" />
             Download PDF

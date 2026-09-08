@@ -1,105 +1,116 @@
 "use client";
 
-import { ArrowUpRight, FileText } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { EarthField } from "@/components/earth-field";
+import { IdentityMark } from "@/components/identity-mark";
 import { MagneticButton } from "@/components/magnetic-button";
-import { GitHubIcon } from "@/components/social-icons";
-import { site } from "@/lib/data";
+import { site, telemetry } from "@/lib/data";
 
 export function Hero() {
   const reduce = useReducedMotion();
-  const lines = ["Harsh", "Vardhan", "Singh"];
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, 160]);
+  const visualX = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const visualOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.08]);
+  const typeY = useTransform(scrollYProgress, [0, 1], [0, -28]);
+  const typeX = useTransform(scrollYProgress, [0, 1], [0, -8]);
 
   return (
-    <section className="relative isolate overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
-      <div className="mesh pointer-events-none absolute inset-0 -z-10" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-bg to-transparent" />
+    <section
+      ref={ref}
+      className="relative isolate min-h-svh overflow-x-clip pt-24 pb-14"
+    >
+      <div className="bloom pointer-events-none absolute inset-0" />
 
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="mb-8 flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-[0.22em] text-faint">
-          <span className="text-accent">01 / Intro</span>
-          <span className="h-px w-8 bg-line" />
-          <span>{site.location}</span>
-          <span className="hidden sm:inline">·</span>
-          <span className="hidden sm:inline">{site.currently}</span>
-        </div>
+      <div className="relative z-10 mx-auto grid min-h-[calc(100svh-7rem)] max-w-7xl items-center gap-8 px-5 sm:px-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <motion.div
+          style={reduce ? undefined : { y: typeY, x: typeX }}
+          className="pt-4"
+        >
+          <p className="mb-8 font-mono text-[10px] tracking-[0.28em] text-faint uppercase">
+            {telemetry.mission}
+          </p>
 
-        <h1 className="font-display text-[16vw] leading-[0.86] tracking-[-0.04em] text-ink sm:text-[12vw] lg:text-[8.4rem]">
-          {lines.map((line, index) => (
-            <span key={line} className="block overflow-hidden">
-              <motion.span
-                className="block"
-                initial={reduce ? false : { y: "110%" }}
-                animate={{ y: "0%" }}
-                transition={{
-                  duration: 0.9,
-                  delay: 0.08 * index,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {line}
-              </motion.span>
-            </span>
-          ))}
-        </h1>
+          <IdentityMark />
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <motion.div
-            initial={reduce ? false : { opacity: 0, y: 18 }}
+            className="mt-10 max-w-md"
+            initial={reduce ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.7 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
           >
-            <p className="max-w-xl text-xl leading-snug text-ink sm:text-2xl">
-              {site.role}
+            <p className="text-lg leading-snug text-ink sm:text-xl">
+              Computer Science Engineer building intelligent systems and ambitious digital experiences.
             </p>
-            <p className="mt-3 max-w-xl text-lg leading-relaxed text-muted">
-              {site.tagline}
+            <p className="mt-5 font-mono text-[10px] tracking-[0.22em] text-faint uppercase">
+              {site.currentRole.label}
             </p>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-faint">
-              {site.personality}
+            <p className="mt-1 text-sm text-muted">
+              {site.currentRole.title} @ {site.currentRole.org}
             </p>
+            <a
+              href={`mailto:${site.email}`}
+              data-cursor="send"
+              className="group mt-6 inline-block font-mono text-sm tracking-[0.04em] text-ink"
+            >
+              <span className="block text-[10px] tracking-[0.22em] text-faint uppercase">
+                Email
+              </span>
+              <span className="relative mt-1 inline-block">
+                {site.email}
+                <span className="absolute inset-x-0 -bottom-1 h-px origin-left scale-x-0 bg-cyan transition-transform duration-500 group-hover:scale-x-100" />
+              </span>
+            </a>
           </motion.div>
 
           <motion.div
-            className="flex flex-col gap-4 sm:flex-row sm:flex-wrap lg:justify-end"
-            initial={reduce ? false : { opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.7 }}
+            className="mt-8 flex flex-wrap items-center gap-5"
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.65 }}
           >
             <MagneticButton
               href="/#work"
-              className="bg-ink text-bg hover:bg-accent hover:text-bg"
+              className="border border-white/10 bg-white text-black hover:bg-cyan hover:text-black"
             >
-              View work
-              <ArrowUpRight className="size-4" />
+              Enter work
             </MagneticButton>
-            <MagneticButton
-              href={site.resumeUrl}
-              className="border border-line bg-surface text-ink hover:border-accent/50"
-            >
-              <FileText className="size-4" />
-              Resume
-            </MagneticButton>
-            <MagneticButton
-              href={site.socials.github}
-              external
-              className="border border-line bg-transparent text-ink hover:border-accent/50"
-            >
-              <GitHubIcon className="size-4" />
-              GitHub
-            </MagneticButton>
+            <div className="relative h-28 w-24 overflow-hidden rounded-3xl border border-white/15 shadow-[0_0_28px_rgb(124_58_237/0.2)] sm:h-36 sm:w-28">
+              <Image
+                src={site.portrait.src}
+                alt={site.portrait.alt}
+                fill
+                sizes="112px"
+                className="object-cover object-[50%_18%]"
+              />
+            </div>
           </motion.div>
-        </div>
+        </motion.div>
 
-        <motion.p
-          className="mt-14 inline-flex items-center gap-3 rounded-full border border-line bg-surface/70 px-4 py-2 text-sm text-muted backdrop-blur sm:hidden"
-          initial={reduce ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+        <motion.div
+          className="relative mx-auto w-full max-w-[560px] lg:max-w-none"
+          style={reduce ? undefined : { y: visualY, x: visualX, opacity: visualOpacity }}
         >
-          <span className="size-2 rounded-full bg-accent" />
-          {site.currently}
-        </motion.p>
+          <EarthField />
+        </motion.div>
+      </div>
+
+      <div className="relative z-10 mx-auto flex max-w-7xl justify-between px-5 sm:px-8">
+        <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
+          {`LAT // ${telemetry.lat}`} · {`LNG // ${telemetry.lng}`}
+        </p>
+        <a
+          href="#about"
+          className="font-mono text-[10px] tracking-[0.22em] text-muted uppercase"
+        >
+          Scroll
+        </a>
       </div>
     </section>
   );

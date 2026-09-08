@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-geist);
+  --font-display: var(--font-syne);
+  --font-mono: var(--font-geist-mono);
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-glow: var(--glow);
+}
+
+:root,
+.light {
+  --bg: #f4f1ea;
+  --surface: #fffdf8;
+  --elevated: #ffffff;
+  --ink: #141414;
+  --muted: #5c5a54;
+  --faint: #8a877e;
+  --line: #ddd8cc;
+  --accent: #0e7490;
+  --accent-2: #4f46e5;
+  --glow: rgb(14 116 144 / 0.18);
+}
+
+.dark {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --elevated: #171717;
+  --ink: #f5f5f5;
+  --muted: #a3a3a3;
+  --faint: #737373;
+  --line: #262626;
+  --accent: #22d3ee;
+  --accent-2: #818cf8;
+  --glow: rgb(34 211 238 / 0.22);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.011em;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 35%, transparent);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.font-display {
+  font-family: var(--font-syne), var(--font-geist), ui-sans-serif, sans-serif;
+}
+
+.noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark .noise {
+  opacity: 0.07;
+}
+
+.mesh {
+  background:
+    radial-gradient(900px 480px at 12% -10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 58%),
+    radial-gradient(700px 420px at 92% 8%, color-mix(in oklab, var(--accent-2) 20%, transparent), transparent 55%),
+    radial-gradient(640px 380px at 70% 88%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 60%);
+}
+
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none;
+}
+
+@media (pointer: coarse) {
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .noise {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

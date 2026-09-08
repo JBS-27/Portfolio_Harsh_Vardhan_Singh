@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useHeroSignal } from "@/components/hero-signal";
 import { cx } from "@/lib/utils";
 
 export function IdentityMark() {
-  const [revealed, setRevealed] = useState(false);
+  const { revealed, setRevealed } = useHeroSignal();
 
   return (
     <h1 className="relative w-full min-w-0 overflow-visible">
@@ -25,7 +25,7 @@ export function IdentityMark() {
       >
         <span
           aria-hidden
-          className="invisible block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[5.4rem]"
+          className="invisible block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem]"
         >
           HARSH
           <br />
@@ -35,7 +35,7 @@ export function IdentityMark() {
         </span>
         <span
           className={cx(
-            "absolute inset-0 block font-display text-[12vw] leading-[0.86] font-medium tracking-[-0.055em] text-ink transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-[9vw] lg:text-[6.4rem]",
+            "absolute inset-0 block font-display text-[12vw] leading-[0.86] font-medium tracking-[-0.055em] text-ink transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-[9vw] lg:text-[5.6rem]",
             revealed && "translate-x-3 opacity-0 blur-[6px]",
           )}
         >
@@ -45,7 +45,7 @@ export function IdentityMark() {
         </span>
         <span
           className={cx(
-            "grad-text pointer-events-none absolute inset-0 block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-[7.2vw] lg:text-[5.4rem]",
+            "grad-text pointer-events-none absolute inset-0 block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-[7.2vw] lg:text-[4.7rem]",
             revealed
               ? "translate-x-0 opacity-100 blur-0"
               : "-translate-x-4 opacity-0 blur-[8px]",
@@ -62,6 +62,13 @@ export function IdentityMark() {
           className={cx(
             "pointer-events-none absolute top-1/2 left-0 h-px w-full origin-left bg-linear-to-r from-transparent via-cyan to-transparent transition-transform duration-700",
             revealed ? "scale-x-100" : "scale-x-0",
+          )}
+        />
+        <span
+          aria-hidden
+          className={cx(
+            "identity-sweep pointer-events-none absolute inset-0 overflow-hidden",
+            revealed && "is-active",
           )}
         />
       </button>

@@ -2,6 +2,7 @@
 
 import { useHeroSignal } from "@/components/hero-signal";
 import { cx } from "@/lib/utils";
+import { TypeAnimation } from 'react-type-animation';
 
 export function IdentityMark() {
   const { revealed, setRevealed } = useHeroSignal();
@@ -23,40 +24,31 @@ export function IdentityMark() {
         onFocus={() => setRevealed(true)}
         onBlur={() => setRevealed(false)}
       >
+        {/* Invisible placeholder to maintain the exact height and width of the layout */}
         <span
           aria-hidden
-          className="invisible block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem]"
+          className="invisible block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem] whitespace-pre-line"
         >
-          HARSH
-          <br />
-          VARDHAN
-          <br />
-          SINGH
+          {'HARSH\nVARDHAN\nSINGH'}
         </span>
-        <span
-          className={cx(
-            "absolute inset-0 block font-display text-[12vw] leading-[0.86] font-medium tracking-[-0.055em] text-ink transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-[9vw] lg:text-[5.6rem]",
-            revealed && "translate-x-3 opacity-0 blur-[6px]",
-          )}
-        >
-          THE
-          <br />
-          INITIATOR
-        </span>
-        <span
-          className={cx(
-            "grad-text pointer-events-none absolute inset-0 block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-[7.2vw] lg:text-[4.7rem]",
-            revealed
-              ? "translate-x-0 opacity-100 blur-0"
-              : "-translate-x-4 opacity-0 blur-[8px]",
-          )}
-        >
-          HARSH
-          <br />
-          VARDHAN
-          <br />
-          SINGH
-        </span>
+
+        {/* The Typing Animation replacing the static text */}
+        <TypeAnimation
+          sequence={[
+            'THE\nINITIATOR',
+            2500, // Significant pause
+            'HARSH\nVARDHAN\nSINGH',
+            4000, // Pause before repeating
+          ]}
+          wrapper="span"
+          cursor={true}
+          speed={40}
+          deletionSpeed={50}
+          repeat={Infinity}
+          className="grad-text absolute inset-0 block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem] whitespace-pre-line"
+        />
+
+        {/* Existing decoration lines and sweeps */}
         <span
           aria-hidden
           className={cx(

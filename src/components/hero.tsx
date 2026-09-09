@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { HeroSignalProvider } from "@/components/hero-signal";
 import { IdentityMark } from "@/components/identity-mark";
-import { MagneticButton } from "@/components/magnetic-button";
 import { site, telemetry } from "@/lib/data";
 
 const InitiatorGlobe = dynamic(
@@ -21,115 +19,107 @@ export function Hero() {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const visualY = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const visualOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.12]);
-  const typeY = useTransform(scrollYProgress, [0, 1], [0, -28]);
-  const typeX = useTransform(scrollYProgress, [0, 1], [0, -8]);
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const visualOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.18]);
+  const typeY = useTransform(scrollYProgress, [0, 1], [0, -20]);
 
   return (
     <HeroSignalProvider>
       <section
+        id="hero"
         ref={ref}
-        className="relative isolate min-h-svh overflow-x-clip pt-24 pb-14"
+        className="relative isolate min-h-svh overflow-x-clip pt-28 pb-10"
       >
         <div className="bloom pointer-events-none absolute inset-0" />
 
-        <svg
-          aria-hidden
-          viewBox="0 0 1200 720"
-          className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block"
-        >
-          <path
-            d="M 390 250 C 520 180 640 210 760 330"
-            fill="none"
-            stroke="url(#orbitLink)"
-            strokeWidth="0.8"
-            opacity="0.38"
-          />
-          <defs>
-            <linearGradient id="orbitLink" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
-              <stop offset="42%" stopColor="#fff8d6" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#fff1a8" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-
-        <div className="relative z-10 mx-auto grid min-h-[calc(100svh-7rem)] max-w-7xl items-center gap-6 px-5 sm:px-8 lg:grid-cols-[0.92fr_1.18fr]">
+        <div className="relative z-10 mx-auto grid min-h-[calc(100svh-7.5rem)] max-w-7xl items-center gap-8 px-5 sm:px-8 lg:grid-cols-[1.08fr_0.92fr]">
           <motion.div
-            style={reduce ? undefined : { y: typeY, x: typeX }}
-            className="relative z-20 pt-4"
+            style={reduce ? undefined : { y: typeY }}
+            className="relative z-20"
           >
-            <p className="mb-5 font-mono text-[10px] tracking-[0.28em] text-faint uppercase">
+            <p className="type-meta mb-7 text-faint">
               {telemetry.mission}
             </p>
 
             <IdentityMark />
 
-            <motion.div
-              className="mt-7 max-w-md"
+            <motion.p
+              className="type-sub mt-10 max-w-[22ch] text-ink/90 sm:max-w-[26ch]"
               initial={reduce ? false : { opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
+              transition={{ delay: 0.46, duration: 0.75 }}
             >
-              <p className="text-lg leading-snug text-ink sm:text-xl">
-                Computer Science Engineer building intelligent systems and ambitious digital experiences.
-              </p>
-              <p className="mt-5 font-mono text-[10px] tracking-[0.22em] text-faint uppercase">
-                {site.currentRole.label}
-              </p>
-              <p className="mt-1 text-sm text-muted">
-                {site.currentRole.title} @ {site.currentRole.org}
-              </p>
-              <a
-                href={`mailto:${site.email}`}
-                data-cursor="send"
-                className="group mt-6 inline-block font-mono text-sm tracking-[0.04em] text-ink"
-              >
-                <span className="block text-[10px] tracking-[0.22em] text-faint uppercase">
-                  Email
-                </span>
-                <span className="relative mt-1 inline-block">
-                  {site.email}
-                  <span className="absolute inset-x-0 -bottom-1 h-px origin-left scale-x-0 bg-cyan transition-transform duration-500 group-hover:scale-x-100" />
-                </span>
-              </a>
-            </motion.div>
+              I build products that think —
+              <br />
+              and visuals that have to hold a glance.
+            </motion.p>
 
-            <motion.div
-              className="mt-6 flex flex-wrap items-center gap-5"
+            <motion.dl
+              className="mt-12 grid max-w-xl grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.65 }}
+              transition={{ delay: 0.62 }}
             >
-              <MagneticButton
+              <div className="border-t border-white/10 pt-4">
+                <dt className="type-meta text-faint">Sys.loc</dt>
+                <dd className="mt-2 font-display text-[1.15rem] tracking-[-0.03em] text-ink">
+                  {site.location.split(",")[0]}
+                </dd>
+                <dd className="mt-1 text-sm text-muted">
+                  India · {telemetry.lat}
+                </dd>
+              </div>
+              <div className="border-t border-white/10 pt-4">
+                <dt className="type-meta text-faint">Role.def</dt>
+                <dd className="mt-2 font-display text-[1.15rem] tracking-[-0.03em] text-ink">
+                  {site.currentRole.title}
+                </dd>
+                <dd className="mt-1 text-sm text-muted">{site.currentRole.org}</dd>
+              </div>
+              <div className="col-span-2 border-t border-white/10 pt-4 sm:col-span-1">
+                <dt className="type-meta text-faint">Sys.mail</dt>
+                <dd className="mt-2">
+                  <a
+                    href={`mailto:${site.email}`}
+                    className="group relative inline-block text-sm tracking-[-0.01em] text-ink"
+                  >
+                    {site.email}
+                    <span className="absolute inset-x-0 -bottom-1 h-px origin-left scale-x-0 bg-ink/50 transition-transform duration-500 group-hover:scale-x-100" />
+                  </a>
+                </dd>
+              </div>
+            </motion.dl>
+
+            <motion.div
+              className="mt-12"
+              initial={reduce ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.74 }}
+            >
+              <a
                 href="/#work"
-                className="border border-white/10 bg-white text-black hover:bg-cyan hover:text-black"
+                className="group inline-flex items-center gap-3 font-display text-lg tracking-[-0.03em] text-ink"
               >
-                Enter work
-              </MagneticButton>
-              
+                Selected work
+                <span className="block h-px w-10 origin-left bg-ink/50 transition-all duration-500 group-hover:w-16" />
+              </a>
             </motion.div>
           </motion.div>
 
           <motion.div
-            className="pointer-events-none relative mx-auto flex w-full justify-center max-lg:absolute max-lg:top-24 max-lg:right-[-4%] max-lg:opacity-50 lg:static lg:opacity-100"
+            className="relative mx-auto flex w-full justify-center max-lg:pointer-events-none max-lg:absolute max-lg:top-28 max-lg:right-[-6%] max-lg:opacity-40 lg:static lg:opacity-100"
             style={reduce ? undefined : { y: visualY, opacity: visualOpacity }}
-            aria-hidden
           >
             <InitiatorGlobe reduce={!!reduce} />
           </motion.div>
         </div>
 
-        <div className="relative z-10 mx-auto mt-6 flex max-w-7xl justify-between px-5 sm:px-8">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
-            {`LAT // ${telemetry.lat}`} · {`LNG // ${telemetry.lng}`}
+        <div className="relative z-10 mx-auto mt-2 flex max-w-7xl justify-between px-5 sm:px-8">
+          <p className="type-meta text-faint">
+            {`Lat // ${telemetry.lat}`} · {`Lng // ${telemetry.lng}`}
           </p>
-          <a
-            href="#about"
-            className="font-mono text-[10px] tracking-[0.22em] text-muted uppercase"
-          >
-            Scroll
+          <a href="#about" className="type-meta text-muted">
+            Index
           </a>
         </div>
       </section>

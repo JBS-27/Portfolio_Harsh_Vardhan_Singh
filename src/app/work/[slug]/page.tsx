@@ -49,13 +49,13 @@ export default async function CaseStudyPage({ params }: PageProps) {
           All missions
         </Link>
 
-        <p className="mt-10 font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
-          Project {project.mission} · {project.year} · {project.kind}
+        <p className="type-meta mt-10 text-faint">
+          Project {project.mission} · {project.year} · {project.discipline}
         </p>
-        <h1 className="glow-title mt-4 font-display text-4xl tracking-[-0.05em] text-ink sm:text-6xl">
+        <h1 className="type-display mt-4 text-ink">
           {project.title}
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted">{project.description}</p>
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{project.description}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">
           {project.liveUrl ? (
@@ -82,7 +82,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
           ) : null}
         </div>
 
-        <div className="glow-card relative mt-12 overflow-hidden rounded-[1.6rem] border border-white/10">
+        <div className="relative mt-12 overflow-hidden">
           <div className="relative aspect-[16/8]">
             <Image
               src={project.image}
@@ -98,13 +98,13 @@ export default async function CaseStudyPage({ params }: PageProps) {
 
         <section className="mt-16 grid gap-10 sm:grid-cols-2">
           <div>
-            <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+            <h2 className="type-meta text-faint">
               Mission
             </h2>
             <p className="mt-3 leading-relaxed text-muted">{caseStudy.problem}</p>
           </div>
           <div>
-            <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+            <h2 className="type-meta text-faint">
               Context
             </h2>
             <p className="mt-3 leading-relaxed text-muted">{caseStudy.role}</p>
@@ -112,13 +112,13 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </section>
 
         <section className="mt-14">
-          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+          <h2 className="type-meta text-faint">
             System
           </h2>
-          <ol className="mt-5 space-y-px bg-white/8">
+          <ol className="mt-5 divide-y divide-white/10 border-y border-white/10">
             {caseStudy.approach.map((step, index) => (
-              <li key={step} className="bg-black px-5 py-4 text-muted">
-                <span className="mr-3 font-mono text-[10px] text-violet">
+              <li key={step} className="py-4 text-muted">
+                <span className="mr-3 type-meta text-faint">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 {step}
@@ -128,7 +128,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </section>
 
         <section className="mt-14">
-          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+          <h2 className="type-meta text-faint">
             Process
           </h2>
           <div className="mt-5 divide-y divide-white/8 border-y border-white/8">
@@ -142,23 +142,23 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </section>
 
         <section className="mt-14">
-          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+          <h2 className="type-meta text-faint">
             Result
           </h2>
-          <dl className="mt-5 grid grid-cols-2 gap-px bg-white/8 sm:grid-cols-4">
+          <dl className="mt-5 grid grid-cols-2 gap-8 border-t border-white/10 pt-8 sm:grid-cols-4">
             {caseStudy.results.map((result) => (
-              <div key={result.label} className="bg-black px-4 py-5">
-                <dt className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
+              <div key={result.label}>
+                <dt className="type-meta text-faint">
                   {result.label}
                 </dt>
-                <dd className="mt-2 text-xl text-ink">{result.value}</dd>
+                <dd className="mt-3 font-display text-2xl tracking-[-0.03em] text-ink">{result.value}</dd>
               </div>
             ))}
           </dl>
         </section>
 
         <section className="mt-14 mb-10">
-          <h2 className="font-mono text-[10px] tracking-[0.24em] text-cyan uppercase">
+          <h2 className="type-meta text-faint">
             Technology
           </h2>
           <div className="mt-4 flex flex-wrap gap-2">

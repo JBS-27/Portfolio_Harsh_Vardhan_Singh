@@ -17,6 +17,17 @@ type Star = {
   hue: number;
 };
 
+const SKY: Record<string, number> = {
+  hero: 1,
+  about: 0.38,
+  mission: 0.12,
+  work: 0.28,
+  studio: 0.16,
+  notes: 0.34,
+  experience: 0.3,
+  contact: 0.88,
+};
+
 function randomHeading(speed: number) {
   const angle = Math.random() * Math.PI * 2;
   return {
@@ -36,34 +47,47 @@ export function Atmosphere() {
 
     const fine = window.matchMedia("(pointer: fine)").matches;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const count = reduce ? 90 : fine ? 1100 : 280;
+    const count = reduce ? 70 : fine ? 820 : 220;
 
     let stars: Star[] = [];
     const mouse = { x: -9999, y: -9999, vx: 0, vy: 0, px: -9999, py: -9999 };
     const parallax = { x: 0, y: 0, tx: 0, ty: 0 };
+    const sky = { value: 1, target: 1 };
     let frame = 0;
     let raf = 0;
     let width = window.innerWidth;
     let height = window.innerHeight;
 
+    function currentSky() {
+      const zones = Object.keys(SKY);
+      let next = 1;
+      for (const id of zones) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top;
+        if (top < height * 0.42) next = SKY[id];
+      }
+      return next;
+    }
+
     function seed() {
       stars = Array.from({ length: count }, () => {
-        const speed = 0.04 + Math.random() * 0.22;
+        const speed = 0.02 + Math.random() * 0.12;
         const heading = randomHeading(speed);
         const depth = Math.random();
         return {
           x: Math.random() * width,
           y: Math.random() * height,
-          r: depth < 0.72 ? Math.random() ** 2.6 * 1.15 + 0.14 : Math.random() * 1.8 + 0.5,
+          r: depth < 0.72 ? Math.random() ** 2.6 * 1.05 + 0.12 : Math.random() * 1.5 + 0.4,
           depth,
           phase: Math.random() * Math.PI * 2,
-          twinkle: Math.random() < 0.62,
-          spark: Math.random() < 0.045,
+          twinkle: Math.random() < 0.48,
+          spark: Math.random() < 0.03,
           vx: heading.vx,
           vy: heading.vy,
           idleVx: heading.vx,
           idleVy: heading.vy,
-          hue: Math.random() < 0.12 ? 1 : 0,
+          hue: Math.random() < 0.1 ? 1 : 0,
         };
       });
     }
@@ -79,15 +103,13 @@ export function Atmosphere() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (stars.length === 0) seed();
       else {
-    // FIX: Randomly reposition stars that are now out-of-bounds 
-    // so they don't all clump in the top-left corner
-    for (const star of stars) {
-      if (star.x > width || star.y > height) {
-        star.x = Math.random() * width;
-        star.y = Math.random() * height;
+        for (const star of stars) {
+          if (star.x > width || star.y > height) {
+            star.x = Math.random() * width;
+            star.y = Math.random() * height;
+          }
+        }
       }
-    }
-  }
     }
 
     function onMove(event: MouseEvent) {
@@ -119,14 +141,14 @@ export function Atmosphere() {
     }
 
     function color(star: Star, alpha: number) {
-      if (star.hue > 0.5) return `rgba(255, 241, 168, ${alpha * 0.85})`;
-      return `rgba(255, 253, 242, ${alpha})`;
+      if (star.hue > 0.5) return `rgba(255, 244, 214, ${alpha * 0.8})`;
+      return `rgba(255, 252, 244, ${alpha})`;
     }
 
     function drawSpark(star: Star, x: number, y: number, alpha: number) {
-      const arm = star.r * 3.4;
-      ctx.strokeStyle = color(star, alpha * 0.85);
-      ctx.lineWidth = 0.6;
+      const arm = star.r * 3;
+      ctx.strokeStyle = color(star, alpha * 0.7);
+      ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(x - arm, y);
       ctx.lineTo(x + arm, y);
@@ -137,17 +159,18 @@ export function Atmosphere() {
 
     function draw() {
       ctx.clearRect(0, 0, width, height);
-      parallax.x += (parallax.tx - parallax.x) * 0.04;
-      parallax.y += (parallax.ty - parallax.y) * 0.04;
-      
-      // DECREASED RADIUS: Was 190 : 108. Now 80 : 50 for a tighter hover effect.
-      const radius = fine ? 80 : 50; 
+      sky.target = currentSky();
+      sky.value += (sky.target - sky.value) * 0.045;
+      parallax.x += (parallax.tx - parallax.x) * 0.03;
+      parallax.y += (parallax.ty - parallax.y) * 0.03;
+
+      const radius = fine ? 54 : 36;
       const radiusSq = radius * radius;
 
       for (const star of stars) {
         if (!reduce) {
-          if (Math.random() < 0.0024) {
-            const next = randomHeading(0.04 + Math.random() * 0.24);
+          if (Math.random() < 0.0012) {
+            const next = randomHeading(0.02 + Math.random() * 0.12);
             star.idleVx = next.vx;
             star.idleVy = next.vy;
           }
@@ -159,32 +182,28 @@ export function Atmosphere() {
           if (distSq < radiusSq && distSq > 0.01) {
             const dist = Math.sqrt(distSq);
             const force = (1 - dist / radius) ** 2;
-            star.vx += (dx / dist) * force * 1.05;
-            star.vy += (dy / dist) * force * 1.05;
-            star.vx += (Math.random() - 0.5) * force * 2.8;
-            star.vy += (Math.random() - 0.5) * force * 2.8;
-            star.vx += mouse.vx * force * 0.05;
-            star.vy += mouse.vy * force * 0.05;
+            star.vx += (dx / dist) * force * 0.35;
+            star.vy += (dy / dist) * force * 0.35;
           }
 
-          star.vx += (star.idleVx - star.vx) * 0.016;
-          star.vy += (star.idleVy - star.vy) * 0.016;
-          star.vx *= 0.987;
-          star.vy *= 0.987;
+          star.vx += (star.idleVx - star.vx) * 0.02;
+          star.vy += (star.idleVy - star.vy) * 0.02;
+          star.vx *= 0.99;
+          star.vy *= 0.99;
           star.x += star.vx;
           star.y += star.vy;
           wrap(star);
         }
 
         const layer = 0.25 + star.depth * 0.9;
-        const px = star.x + parallax.x * 16 * layer;
-        const py = star.y + parallax.y * 10 * layer;
-        const base = 0.22 + star.depth * 0.68;
+        const px = star.x + parallax.x * 12 * layer;
+        const py = star.y + parallax.y * 8 * layer;
+        const base = (0.16 + star.depth * 0.55) * sky.value;
         const twinkle = !reduce && star.twinkle
-          ? base + (Math.sin(frame * (0.018 + star.depth * 0.02) + star.phase) + 1) * (0.18 + star.depth * 0.12)
+          ? base + (Math.sin(frame * (0.012 + star.depth * 0.014) + star.phase) + 1) * (0.08 + star.depth * 0.06) * sky.value
           : base;
 
-        if (star.spark && twinkle > 0.55) {
+        if (star.spark && twinkle > 0.4) {
           drawSpark(star, px, py, twinkle);
         }
 

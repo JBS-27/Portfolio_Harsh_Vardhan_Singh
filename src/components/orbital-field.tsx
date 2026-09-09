@@ -127,7 +127,6 @@ export function OrbitalField() {
         src="/spacecraft.png"
         alt=""
         aria-hidden
-        data-cursor="orbit"
         className="pointer-events-none absolute w-[22%] max-w-[118px] select-none will-change-transform"
       />
     </div>

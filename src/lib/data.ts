@@ -63,12 +63,14 @@ export const about = {
   availability:
     "Open to internships, freelance, full-time conversations, and collaborations — especially AI products, high-craft interfaces, and campaigns that have to work in the real world.",
   facts: [
-    { label: "CGPA", value: "9.71" },
-    { label: "Dewang Mehta IT Award", value: "3×" },
-    { label: "Rajya Puraskar", value: "Scouts" },
-    { label: "CBSE XII", value: "98.2%" },
+    { label: "CGPA", detail: "IIIT Surat", value: 9.71, decimals: 2, suffix: "" },
+    { label: "Dewang Mehta", detail: "IT Award", value: 3, decimals: 0, suffix: "×" },
+    { label: "Rajya Puraskar", detail: "Bharat Scouts", display: "Scouts" },
+    { label: "CBSE XII", detail: "Science", value: 98.2, decimals: 1, suffix: "%" },
   ],
 };
+
+export type Fact = (typeof about.facts)[number];
 
 export type ProjectCoverMotif =
   | "blueprint"
@@ -91,6 +93,7 @@ export type Project = {
   featured?: boolean;
   description: string;
   tags: string[];
+  discipline: string;
   liveUrl?: string;
   repoUrl?: string;
   image: string;
@@ -122,6 +125,7 @@ export const projects: Project[] = [
     description:
       "A digital twin for Indian residential sites — materials, crew, bills, cash envelope, and a project-aware assistant that answers from the ledger.",
     tags: ["TanStack Start", "React 19", "Postgres", "Better Auth", "AI"],
+    discipline: "Product / Interface / AI",
     liveUrl: "https://nirmaan-the-ultimate-solution.vercel.app/",
     repoUrl: "https://github.com/JBS-27/Nirmaan_The_Ultimate_Solution",
     image: "/projects/nirmaan-build.jpg",
@@ -177,6 +181,7 @@ export const projects: Project[] = [
     description:
       "A ~190k-parameter ensemble that forecasts five-day air quality across 26 Indian cities at 86.6% bucket accuracy — deployed as a sub-second Streamlit dashboard.",
     tags: ["Python", "TensorFlow", "scikit-learn", "Streamlit", "SHAP"],
+    discipline: "Research / AI / Visual system",
     repoUrl: "https://github.com/JBS-27/Air_Pollution_monitoring_system",
     image: "/projects/aqi.jpg",
     cover: { from: "#01040c", to: "#0a1838", motif: "wave" },
@@ -230,6 +235,7 @@ export const projects: Project[] = [
     description:
       "A full-stack loan platform with RBAC, JWT sessions, and indexed MongoDB queries — verification workflows that cut turnaround by 30%.",
     tags: ["Next.js", "Tailwind", "MongoDB", "JWT", "REST"],
+    discipline: "Product / Interface / Systems",
     repoUrl: "https://github.com/JBS-27/Loan_Application_and_Verification",
     image: "/projects/lendflow.jpg",
     cover: { from: "#07060c", to: "#1a1028", motif: "ledger" },
@@ -275,6 +281,7 @@ export const projects: Project[] = [
     description:
       "An end-to-end agent that reads a resume, extracts a structured profile, and is being built toward job-fit, tailored answers, and human-reviewed form fill.",
     tags: ["FastAPI", "React", "MongoDB", "LLMs", "Playwright"],
+    discipline: "Product / AI / Systems",
     repoUrl: "https://github.com/JBS-27/agentic-job-application-platform",
     image: "/projects/agentic.jpg",
     cover: { from: "#080414", to: "#1c1040", motif: "agent" },
@@ -327,6 +334,7 @@ export const projects: Project[] = [
     description:
       "A large-canvas visualization that flips the familiar planet — built to practice presence, scale, and the kind of image that works like a poster.",
     tags: ["JavaScript", "WebGL / Canvas", "Vercel"],
+    discipline: "Experiment / Image",
     liveUrl: "https://invertedearthvisualization.vercel.app",
     repoUrl: "https://github.com/JBS-27/Inverted_Earth_Visualization",
     image: "/projects/inverted-earth.jpg",
@@ -368,6 +376,7 @@ export const projects: Project[] = [
     description:
       "A lab where gravity isn’t universal — a playground for attention, motion, and the rules you choose to break on a page.",
     tags: ["JavaScript", "Canvas", "Interaction"],
+    discipline: "Experiment / Interaction",
     liveUrl: "https://selective-gravity-lab.vercel.app",
     repoUrl: "https://github.com/JBS-27/Selective-gravity-lab",
     image: "/projects/selective-gravity.jpg",
@@ -532,49 +541,119 @@ export const timeline: TimelineItem[] = [
   },
 ];
 
+export type StudioFrame = "hero" | "large" | "medium" | "small";
+
 export type StudioPiece = {
   id: string;
+  brand: string;
+  campaign: string;
+  medium: string;
   title: string;
   caption: string;
   src: string;
   href: string;
+  frame: StudioFrame;
 };
 
 export const studioPieces: StudioPiece[] = [
   {
     id: "concept-14",
-    title: "Concept #14",
-    caption: "A billboard campaign built for India’s streets — Manyavar sets the vow, Tanishq finishes the sentence.",
+    brand: "Manyavar + Tanishq",
+    campaign: "Wedding season",
+    medium: "Outdoor campaign",
+    title: "The vow, then the gold",
+    caption: "Manyavar sets the question. Tanishq finishes the sentence.",
     src: "/studio/concept-14.jpg",
     href: "https://x.com/singharshll52",
+    frame: "hero",
   },
   {
     id: "concept-13a",
-    title: "Concept #13",
-    caption: "The crux of grabbing attention for brands today. One idea. No second glance.",
+    brand: "Nivea + Beardo",
+    campaign: "Sun, then style",
+    medium: "Outdoor campaign",
+    title: "One idea. No second glance.",
+    caption: "SPF for the sun. Style for the same street.",
     src: "/studio/concept-13a.jpg",
     href: "https://x.com/singharshll52",
+    frame: "large",
   },
   {
     id: "concept-13b",
-    title: "Concept #13 · street",
-    caption: "Same campaign, closer to the road — type that has to land at 60 km/h.",
+    brand: "Nivea + Beardo",
+    campaign: "Street crop",
+    medium: "Outdoor campaign",
+    title: "Closer to the road",
+    caption: "Type that has to land at 60 km/h.",
     src: "/studio/concept-13b.jpg",
     href: "https://x.com/singharshll52",
+    frame: "small",
   },
   {
     id: "concept-12",
-    title: "Concept #12",
-    caption: "Amul sets the context. Godrej brings the security. Zepto delivers the night.",
+    brand: "Amul + Godrej + Zepto",
+    campaign: "Chor / night run",
+    medium: "Outdoor campaign",
+    title: "Context, then lock, then minutes",
+    caption: "Amul sets the joke. Godrej keeps it. Zepto delivers the night.",
     src: "/studio/concept-12.jpg",
     href: "https://x.com/singharshll52",
+    frame: "large",
+  },
+  {
+    id: "inverted-earth",
+    brand: "HVS Studio",
+    campaign: "Inverted Earth",
+    medium: "Visual experiment",
+    title: "The familiar planet, flipped",
+    caption: "One image. Poster scale. No legend.",
+    src: "/projects/inverted-earth.jpg",
+    href: "/work/inverted-earth",
+    frame: "small",
   },
   {
     id: "nirmaan-x",
-    title: "Nirmaan",
-    caption: "Building a house? Most people lose the materials, the crew, and the envelope. This is the twin.",
+    brand: "Nirmaan",
+    campaign: "The twin",
+    medium: "Product still / outdoor",
+    title: "The house, accounted for",
+    caption: "Materials, crew, envelope — one surface.",
     src: "/studio/nirmaan-x.jpg",
     href: "https://x.com/singharshll52",
+    frame: "medium",
+  },
+  {
+    id: "nirmaan-build",
+    brand: "Nirmaan",
+    campaign: "Construction OS",
+    medium: "Product still",
+    title: "Site as a ledger",
+    caption: "A digital twin for Indian residential sites.",
+    src: "/projects/nirmaan-build.jpg",
+    href: "/work/nirmaan",
+    frame: "medium",
+  },
+  {
+    id: "aqi-still",
+    brand: "HVS Studio",
+    campaign: "Five-day AQI",
+    medium: "Visual system",
+    title: "Air, as a surface",
+    caption: "Forecast as an image you can read in a second.",
+    src: "/projects/aqi.jpg",
+    href: "/work/aqi-forecasting",
+    frame: "medium",
+  },
+  {
+    id: "selective-gravity",
+    brand: "HVS Studio",
+    campaign: "Selective Gravity",
+    medium: "Interactive sketch",
+    title: "A law you can edit",
+    caption: "Gravity as a material, not a constant.",
+    src: "/projects/selective-gravity.jpg",
+    href: "/work/selective-gravity",
+    frame: "medium",
   },
 ];
 

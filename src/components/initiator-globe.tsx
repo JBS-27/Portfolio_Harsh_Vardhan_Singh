@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, useMemo, useRef, type MutableRefObject } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 import land from "@/data/ne_110m_land.json";
 import { useHeroSignal } from "@/components/hero-signal";
@@ -92,7 +92,7 @@ const atmosphereFragment = /* glsl */ `
   void main() {
     float fresnel = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 3.1);
     vec3 color = mix(vec3(1.0, 0.992, 0.949), vec3(1.0, 0.945, 0.659), fresnel * 0.35);
-    float alpha = fresnel * (0.085 + uReveal * 0.04);
+    float alpha = fresnel * (0.05 + uReveal * 0.025);
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -118,10 +118,12 @@ function LandPoints({
   reduce,
   revealRef,
   lightRef,
+  hoverRef,
 }: {
   reduce: boolean;
   revealRef: MutableRefObject<number>;
   lightRef: MutableRefObject<THREE.Vector3>;
+  hoverRef: MutableRefObject<number>;
 }) {
   const cloud = useGlobeCloud();
   const material = useMemo(
@@ -147,7 +149,7 @@ function LandPoints({
   useFrame(({ gl: renderer }) => {
     material.uniforms.uPixelRatio.value = Math.min(renderer.getPixelRatio(), 2);
     material.uniforms.uReveal.value = revealRef.current;
-    material.uniforms.uHover.value = reduce ? 0 : 0.85;
+    material.uniforms.uHover.value = reduce ? 0 : hoverRef.current;
     material.uniforms.uLightDir.value.copy(lightRef.current);
   });
 
@@ -195,7 +197,7 @@ function AtmosphereShell({ revealRef }: { revealRef: MutableRefObject<number> })
 function Halo({ revealRef }: { revealRef: MutableRefObject<number> }) {
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   useFrame(() => {
-    if (mat.current) mat.current.opacity = 0.018 + revealRef.current * 0.012;
+    if (mat.current) mat.current.opacity = 0.01 + revealRef.current * 0.008;
   });
   return (
     <mesh scale={1.055}>
@@ -268,7 +270,24 @@ function LockedCamera() {
   return null;
 }
 
-function GlobeRig({ reduce }: { reduce: boolean }) {
+type GlobeControl = {
+  ndcX: number;
+  ndcY: number;
+  over: boolean;
+  dragging: boolean;
+  yaw: number;
+  pitch: number;
+  angVx: number;
+  angVy: number;
+};
+
+function GlobeRig({
+  reduce,
+  control,
+}: {
+  reduce: boolean;
+  control: MutableRefObject<GlobeControl>;
+}) {
   const root = useRef<THREE.Group>(null);
   const spin = useRef<THREE.Group>(null);
   const sway = useRef<THREE.Group>(null);
@@ -276,48 +295,59 @@ function GlobeRig({ reduce }: { reduce: boolean }) {
   const revealRef = useRef(0);
   const lightRef = useRef(new THREE.Vector3(0.18, 0.2, 1).normalize());
   const autoY = useRef(-0.32);
-  const swayY = useRef(0);
-  const swayX = useRef(0);
-  const target = useRef({ y: 0, x: 0 });
-
-  useEffect(() => {
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    if (!fine || reduce) return;
-    function onMove(event: MouseEvent) {
-      target.current.y = (event.clientX / window.innerWidth - 0.5) * 0.16;
-      target.current.x = (event.clientY / window.innerHeight - 0.5) * 0.07;
-      lightRef.current
-        .set(
-          (event.clientX / window.innerWidth - 0.5) * 1.15,
-          -(event.clientY / window.innerHeight - 0.5) * 0.75,
-          1,
-        )
-        .normalize();
-    }
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [reduce]);
+  const leanY = useRef(0);
+  const leanX = useRef(0);
+  const posX = useRef(0);
+  const posY = useRef(0);
+  const hoverRef = useRef(0.35);
 
   useFrame((_, dt) => {
     const step = Math.min(dt, 0.05);
+    const c = control.current;
     revealRef.current = THREE.MathUtils.damp(revealRef.current, revealed ? 1 : 0, 3.2, step);
+    hoverRef.current = THREE.MathUtils.damp(
+      hoverRef.current,
+      reduce ? 0.2 : c.over || c.dragging ? 0.7 : 0.32,
+      3.4,
+      step,
+    );
 
-    if (!reduce) {
+    if (!reduce && !c.dragging && Math.hypot(c.angVx, c.angVy) < 0.18) {
       autoY.current += step * ((Math.PI * 2) / SPIN_PERIOD);
     }
 
-    swayY.current = reduce ? 0 : THREE.MathUtils.damp(swayY.current, target.current.y, 1.8, step);
-    swayX.current = reduce ? 0 : THREE.MathUtils.damp(swayX.current, target.current.x, 1.8, step);
+    if (!c.dragging) {
+      c.yaw += c.angVx;
+      c.pitch = THREE.MathUtils.clamp(c.pitch + c.angVy, -1.25, 1.25);
+      c.angVx *= 0.94;
+      c.angVy *= 0.94;
+      if (Math.abs(c.angVx) < 0.00008) c.angVx = 0;
+      if (Math.abs(c.angVy) < 0.00008) c.angVy = 0;
+    }
+
+    const targetLeanY = reduce ? 0 : c.over ? c.ndcX * 0.28 : c.ndcX * 0.06;
+    const targetLeanX = reduce ? 0 : c.over ? c.ndcY * 0.14 : c.ndcY * 0.03;
+    const targetPosX = reduce ? 0 : c.over ? c.ndcX * 0.08 : c.ndcX * 0.02;
+    const targetPosY = reduce ? 0 : c.over ? -c.ndcY * 0.05 : -c.ndcY * 0.015;
+
+    leanY.current = THREE.MathUtils.damp(leanY.current, targetLeanY, 2.8, step);
+    leanX.current = THREE.MathUtils.damp(leanX.current, targetLeanX, 2.8, step);
+    posX.current = THREE.MathUtils.damp(posX.current, targetPosX, 2.6, step);
+    posY.current = THREE.MathUtils.damp(posY.current, targetPosY, 2.6, step);
+
+    lightRef.current.set(c.ndcX * 0.85, -c.ndcY * 0.55, 1).normalize();
 
     if (root.current) root.current.scale.setScalar(1);
     if (spin.current) {
-      spin.current.scale.setScalar(1);
       spin.current.rotation.set(0, autoY.current, 0);
     }
     if (sway.current) {
-      sway.current.scale.setScalar(1);
-      sway.current.rotation.set(swayX.current, swayY.current, 0);
-      sway.current.position.set(swayY.current * 0.08, -swayX.current * 0.07, 0);
+      sway.current.rotation.set(
+        THREE.MathUtils.clamp(c.pitch + leanX.current, -1.3, 1.3),
+        c.yaw + leanY.current,
+        0,
+      );
+      sway.current.position.set(posX.current, posY.current, 0);
     }
   });
 
@@ -330,7 +360,7 @@ function GlobeRig({ reduce }: { reduce: boolean }) {
               <sphereGeometry args={[GLOBE_RADIUS * 0.978, 64, 64]} />
               <meshBasicMaterial color="#000000" />
             </mesh>
-            <LandPoints reduce={reduce} revealRef={revealRef} lightRef={lightRef} />
+            <LandPoints reduce={reduce} revealRef={revealRef} lightRef={lightRef} hoverRef={hoverRef} />
           </group>
         </group>
         <AtmosphereShell revealRef={revealRef} />
@@ -338,26 +368,131 @@ function GlobeRig({ reduce }: { reduce: boolean }) {
         <Suspense fallback={null}>
           <Craft reduce={reduce} />
         </Suspense>
+        <ThinLimb />
       </group>
-      <ThinLimb />
     </group>
   );
 }
 
 export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [hint, setHint] = useState(true);
+  const control = useRef<GlobeControl>({
+    ndcX: 0,
+    ndcY: 0,
+    over: false,
+    dragging: false,
+    yaw: 0,
+    pitch: 0,
+    angVx: 0,
+    angVy: 0,
+  });
+
+  useEffect(() => {
+    const node = wrapRef.current;
+    if (!node || reduce) return;
+
+    const last = { x: 0, y: 0 };
+
+    function setNdc(event: PointerEvent, local: boolean) {
+      if (local) {
+        const rect = node.getBoundingClientRect();
+        control.current.ndcX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        control.current.ndcY = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+      } else {
+        control.current.ndcX = (event.clientX / window.innerWidth - 0.5) * 2;
+        control.current.ndcY = (event.clientY / window.innerHeight - 0.5) * 2;
+      }
+    }
+
+    function onMove(event: PointerEvent) {
+      const c = control.current;
+      const rect = node.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!c.dragging) c.over = inside;
+      setNdc(event, c.over || c.dragging);
+
+      if (!c.dragging) return;
+      const dx = event.clientX - last.x;
+      const dy = event.clientY - last.y;
+      c.yaw += dx * 0.0058;
+      c.pitch = THREE.MathUtils.clamp(c.pitch + dy * 0.0044, -1.25, 1.25);
+      c.angVx = dx * 0.0058;
+      c.angVy = dy * 0.0044;
+      last.x = event.clientX;
+      last.y = event.clientY;
+    }
+
+    function onDown(event: PointerEvent) {
+      const c = control.current;
+      c.dragging = true;
+      c.over = true;
+      c.angVx = 0;
+      c.angVy = 0;
+      last.x = event.clientX;
+      last.y = event.clientY;
+      setNdc(event, true);
+      node.setPointerCapture(event.pointerId);
+      document.body.style.userSelect = "none";
+      setHint(false);
+    }
+
+    function onUp() {
+      control.current.dragging = false;
+      document.body.style.userSelect = "";
+    }
+
+    function onLeave() {
+      if (!control.current.dragging) control.current.over = false;
+    }
+
+    node.addEventListener("pointerdown", onDown);
+    node.addEventListener("pointerleave", onLeave);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    return () => {
+      document.body.style.userSelect = "";
+      node.removeEventListener("pointerdown", onDown);
+      node.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+  }, [reduce]);
+
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[min(42vw,480px)] max-lg:max-w-[min(72vw,340px)]">
-      <Canvas
-        camera={{ position: [0, 0.04, CAMERA_Z], fov: CAMERA_FOV, near: 0.1, far: 20 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        style={{ background: "transparent" }}
-        frameloop="always"
-        resize={{ debounce: 120 }}
+    <div className="relative mx-auto aspect-square w-full max-w-[min(48vw,540px)] max-lg:max-w-[min(76vw,360px)]">
+      <div
+        ref={wrapRef}
+        className="absolute inset-0 touch-none"
+        role="img"
+        aria-label="Dotted globe. Drag to rotate."
       >
-        <LockedCamera />
-        <GlobeRig reduce={reduce} />
-      </Canvas>
+        <Canvas
+          camera={{ position: [0, 0.04, CAMERA_Z], fov: CAMERA_FOV, near: 0.1, far: 20 }}
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          style={{ background: "transparent" }}
+          frameloop="always"
+          resize={{ debounce: 120 }}
+        >
+          <LockedCamera />
+          <GlobeRig reduce={reduce} control={control} />
+        </Canvas>
+      </div>
+      <p
+        className={`pointer-events-none absolute inset-x-0 -bottom-5 text-center font-mono text-[10px] tracking-[0.24em] text-faint uppercase transition-opacity duration-700 max-lg:hidden ${
+          hint ? "opacity-40" : "opacity-0"
+        }`}
+      >
+        Orb / 001
+      </p>
     </div>
   );
 }

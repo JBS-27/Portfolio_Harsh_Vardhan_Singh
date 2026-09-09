@@ -63,7 +63,7 @@ export function ContactForm() {
           required
           name="name"
           autoComplete="name"
-          className="w-full border border-white/10 bg-black px-4 py-3 text-ink outline-none placeholder:text-faint focus:border-cyan"
+          className="w-full border-b border-white/12 bg-transparent px-0 py-3 text-ink outline-none placeholder:text-faint focus:border-ink/50"
           placeholder="Your name"
         />
       </label>
@@ -74,7 +74,7 @@ export function ContactForm() {
           type="email"
           name="email"
           autoComplete="email"
-          className="w-full border border-white/10 bg-black px-4 py-3 text-ink outline-none placeholder:text-faint focus:border-cyan"
+          className="w-full border-b border-white/12 bg-transparent px-0 py-3 text-ink outline-none placeholder:text-faint focus:border-ink/50"
           placeholder="you@studio.com"
         />
       </label>
@@ -84,13 +84,13 @@ export function ContactForm() {
           required
           name="message"
           rows={5}
-          className="w-full resize-y border border-white/10 bg-black px-4 py-3 text-ink outline-none placeholder:text-faint focus:border-cyan"
+          className="w-full resize-y border-b border-white/12 bg-transparent px-0 py-3 text-ink outline-none placeholder:text-faint focus:border-ink/50"
           placeholder="What are we making?"
         />
       </label>
       <MagneticButton
         type="submit"
-        className="w-full border border-white/10 bg-white text-black hover:bg-cyan disabled:opacity-60 sm:w-auto"
+        className="w-full border border-white/12 bg-ink text-black hover:bg-white disabled:opacity-60 sm:w-auto"
       >
         {status === "sending" ? "Sending…" : "Send message"}
       </MagneticButton>

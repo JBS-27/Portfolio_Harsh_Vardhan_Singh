@@ -3,7 +3,7 @@ import { cx } from "@/lib/utils";
 type SectionHeadingProps = {
   index: string;
   eyebrow: string;
-  title: string;
+  title?: string;
   description?: string;
   className?: string;
 };
@@ -16,17 +16,19 @@ export function SectionHeading({
   className,
 }: SectionHeadingProps) {
   return (
-    <div className={cx("max-w-3xl", className)}>
-      <p className="mb-5 flex items-center gap-4 font-mono text-[10px] tracking-[0.28em] text-faint uppercase">
-        <span className="text-cyan">{index}</span>
-        <span className="h-px w-10 bg-white/15" />
+    <div className={cx("max-w-4xl", className)}>
+      <p className="type-meta mb-6 flex items-center gap-3 text-faint">
+        <span className="text-ink/70">{index}</span>
+        <span className="text-white/20">/</span>
         {eyebrow}
       </p>
-      <h2 className="glow-title font-display text-4xl leading-[0.95] font-medium tracking-[-0.04em] text-ink sm:text-6xl">
-        {title}
-      </h2>
+      {title ? (
+        <h2 className="type-section max-w-[18ch] text-ink">
+          {title}
+        </h2>
+      ) : null}
       {description ? (
-        <p className="mt-5 max-w-xl text-base leading-relaxed text-muted">
+        <p className="mt-6 max-w-lg text-[1.05rem] leading-relaxed text-muted">
           {description}
         </p>
       ) : null}

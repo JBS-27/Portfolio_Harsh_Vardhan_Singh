@@ -1,61 +1,57 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import { useHeroSignal } from "@/components/hero-signal";
 import { cx } from "@/lib/utils";
-import { TypeAnimation } from 'react-type-animation';
+
+const lines = [
+  { text: "HARSH", indent: "pl-0" },
+  { text: "VARDHAN", indent: "pl-[0.06em] sm:pl-[0.12em]" },
+  { text: "SINGH", indent: "pl-[0.14em] sm:pl-[0.28em] text-[#efe6cc]" },
+] as const;
 
 export function IdentityMark() {
+  const reduce = useReducedMotion();
   const { revealed, setRevealed } = useHeroSignal();
 
   return (
-    <h1 className="relative w-full min-w-0 overflow-visible">
+    <h1 className="relative w-full min-w-0">
       <button
         type="button"
-        data-cursor={revealed ? "identity" : "initiator"}
         aria-label={
           revealed
-            ? "Harsh Vardhan Singh. Press to return to The Initiator."
+            ? "Harsh Vardhan Singh. Return to The Initiator."
             : "The Initiator. Reveal Harsh Vardhan Singh."
         }
         aria-pressed={revealed}
-        className="group relative block w-full overflow-visible text-left"
+        className="group relative block w-full text-left"
         onMouseEnter={() => setRevealed(true)}
         onMouseLeave={() => setRevealed(false)}
         onFocus={() => setRevealed(true)}
         onBlur={() => setRevealed(false)}
       >
-        {/* Invisible placeholder to maintain the exact height and width of the layout */}
-        <span
-          aria-hidden
-          className="invisible block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem] whitespace-pre-line"
-        >
-          {'HARSH\nVARDHAN\nSINGH'}
+        <span className="font-serif text-[clamp(1.15rem,2.1vw,1.55rem)] tracking-[-0.02em] text-white/50 italic">
+          The Initiator
         </span>
 
-        {/* The Typing Animation replacing the static text */}
-        <TypeAnimation
-          sequence={[
-            'THE\nINITIATOR',
-            2000, // Significant pause
-            'HARSH\nVARDHAN\nSINGH',
-            2500, // Pause before repeating
-          ]}
-          wrapper="span"
-          cursor={true}
-          speed={30}
-          deletionSpeed={40}
-          repeat={Infinity}
-          className="grad-text absolute inset-0 block font-display text-[11vw] leading-[0.88] font-medium tracking-[-0.045em] sm:text-[7.2vw] lg:text-[4.7rem] whitespace-pre-line"
-        />
+        <span className="hero-name mt-4 block text-ink">
+          {lines.map((line, index) => (
+            <motion.span
+              key={line.text}
+              className={cx("block", line.indent)}
+              initial={reduce ? false : { opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.1 + index * 0.08,
+                duration: 0.74,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {line.text}
+            </motion.span>
+          ))}
+        </span>
 
-        {/* Existing decoration lines and sweeps */}
-        <span
-          aria-hidden
-          className={cx(
-            "pointer-events-none absolute top-1/2 left-0 h-px w-full origin-left bg-linear-to-r from-transparent via-cyan to-transparent transition-transform duration-700",
-            revealed ? "scale-x-100" : "scale-x-0",
-          )}
-        />
         <span
           aria-hidden
           className={cx(

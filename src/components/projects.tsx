@@ -9,19 +9,18 @@ export function Projects() {
   const experimental = projects.filter((project) => project.kind === "experimental");
 
   return (
-    <section id="work" className="relative scroll-mt-24 py-24 sm:py-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-violet/50 to-transparent" />
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section id="work" className="relative scroll-mt-28 py-28 sm:py-36">
+      <div className="section-veil section-veil-work" />
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>
           <SectionHeading
-            index="02"
-            eyebrow="Missions"
+            index="03"
+            eyebrow="Work"
             title="Work that had to survive contact with reality."
-            description="Featured systems first. Then platforms. Then experiments — the pieces that test attention and physics."
           />
         </FadeIn>
 
-        <div className="mt-16 space-y-8">
+        <div className="mt-20 space-y-24">
           {featured.map((project, index) => (
             <ProjectCard
               key={project.slug}
@@ -32,16 +31,14 @@ export function Projects() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+        <div className="mt-24 grid gap-16 lg:grid-cols-2">
           {secondary.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}
         </div>
 
-        <p className="mt-14 font-mono text-[10px] tracking-[0.24em] text-faint uppercase">
-          Experimental
-        </p>
-        <div className="mt-4 grid gap-8 lg:grid-cols-2">
+        <p className="type-meta mt-24 text-faint">Experimental</p>
+        <div className="mt-8 grid gap-16 lg:grid-cols-2">
           {experimental.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, type MotionValue } from "framer-motion";
 
-const DOTS = 8;
+const DOTS = 18;
 
 function TrailDot({
   followX,
@@ -16,7 +16,7 @@ function TrailDot({
   index: number;
   total: number;
 }) {
-  const stiffness = 360 - index * 34;
+  const stiffness = Math.max(70, 360 - index * 16);
   const damping = 18 + index * 2;
   const x = useSpring(followX, { stiffness, damping, mass: 0.38 });
   const y = useSpring(followY, { stiffness, damping, mass: 0.38 });
@@ -25,12 +25,12 @@ function TrailDot({
   return (
     <>
       <motion.div
-        className="absolute top-0 left-0 size-1.5 rounded-full bg-[#f3f1ea] will-change-transform"
+        className="absolute top-0 left-0 size-5 rounded-full bg-[#f3f1ea] will-change-transform"
         style={{
           x,
           y,
           opacity: 1 - falloff * 0.9,
-          scale: 1 - falloff * 0.55,
+          scale: 1 - falloff * 0.82,
           translateX: "-50%",
           translateY: "-50%",
         }}
@@ -101,7 +101,7 @@ export function CursorTrail() {
       style={{ opacity: visible ? 1 : 0 }}
     >
       <motion.div
-        className="absolute top-0 left-0 size-1.5 rounded-full bg-[#f3f1ea] will-change-transform"
+        className="absolute top-0 left-0 size-5 rounded-full bg-[#f3f1ea] will-change-transform"
         style={{
           x: leadX,
           y: leadY,

@@ -46,6 +46,7 @@ export const metadata: Metadata = {
     "AI systems",
     "portfolio",
     "Nirmaan",
+    "BuildEstate",
     "AQI forecasting",
   ],
   authors: [{ name: site.name, url: site.url }],

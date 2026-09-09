@@ -1,155 +1,115 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring, type MotionValue } from "framer-motion";
 
-type Node = { x: number; y: number; vx: number; vy: number };
+const DOTS = 8;
 
-const LEAD = 26;
-const SHADOW = 22;
+function TrailDot({
+  followX,
+  followY,
+  index,
+  total,
+}: {
+  followX: MotionValue<number>;
+  followY: MotionValue<number>;
+  index: number;
+  total: number;
+}) {
+  const stiffness = 360 - index * 34;
+  const damping = 18 + index * 2;
+  const x = useSpring(followX, { stiffness, damping, mass: 0.38 });
+  const y = useSpring(followY, { stiffness, damping, mass: 0.38 });
+  const falloff = index / (total - 1);
 
-function seed(count: number, x: number, y: number): Node[] {
-  return Array.from({ length: count }, () => ({ x, y, vx: 0, vy: 0 }));
-}
-
-function step(nodes: Node[], targetX: number, targetY: number, spring: number, friction: number) {
-  let tx = targetX;
-  let ty = targetY;
-  for (let i = 0; i < nodes.length; i += 1) {
-    const node = nodes[i];
-    const tension = i === 0 ? spring * 1.15 : spring;
-    node.vx += (tx - node.x) * tension;
-    node.vy += (ty - node.y) * tension;
-    node.vx *= friction;
-    node.vy *= friction;
-    node.x += node.vx;
-    node.y += node.vy;
-    tx = node.x;
-    ty = node.y;
-  }
-}
-
-function path(ctx: CanvasRenderingContext2D, nodes: Node[]) {
-  if (nodes.length < 2) return;
-  ctx.beginPath();
-  ctx.moveTo(nodes[0].x, nodes[0].y);
-  for (let i = 1; i < nodes.length - 1; i += 1) {
-    const next = nodes[i + 1];
-    const cx = nodes[i].x;
-    const cy = nodes[i].y;
-    ctx.quadraticCurveTo(cx, cy, (cx + next.x) / 2, (cy + next.y) / 2);
-  }
-  const last = nodes[nodes.length - 1];
-  ctx.lineTo(last.x, last.y);
+  return (
+    <>
+      <motion.div
+        className="absolute top-0 left-0 size-1.5 rounded-full bg-[#f3f1ea] will-change-transform"
+        style={{
+          x,
+          y,
+          opacity: 1 - falloff * 0.9,
+          scale: 1 - falloff * 0.55,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+      />
+      {index < total - 1 ? (
+        <TrailDot followX={x} followY={y} index={index + 1} total={total} />
+      ) : null}
+    </>
+  );
 }
 
 export function CursorTrail() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const reduce = useReducedMotion();
+  const [enabled, setEnabled] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const points = useRef(Array.from({ length: DOTS }, () => ({ x: -80, y: -80 })));
+  const leadX = useMotionValue(-80);
+  const leadY = useMotionValue(-80);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const desktop = window.matchMedia("(min-width: 768px)");
 
-    const hover = window.matchMedia("(hover: hover)").matches;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!hover || reduce) return;
+    function sync() {
+      setEnabled(desktop.matches && !reduce);
+    }
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    sync();
+    desktop.addEventListener("change", sync);
+    return () => desktop.removeEventListener("change", sync);
+  }, [reduce]);
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    const mouse = { x: -200, y: -200, live: false };
-    const lead = seed(LEAD, -200, -200);
-    const shade = seed(SHADOW, -200, -200);
-    let raf = 0;
+  useEffect(() => {
+    if (!enabled) {
+      document.documentElement.classList.remove("has-custom-cursor");
+      return;
+    }
 
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
+    document.documentElement.classList.add("has-custom-cursor");
 
     function onMove(event: MouseEvent) {
-      mouse.x = event.clientX;
-      mouse.y = event.clientY;
-      mouse.live = true;
+      const next = { x: event.clientX, y: event.clientY };
+      points.current[0] = next;
+      leadX.set(next.x);
+      leadY.set(next.y);
+      setVisible((was) => was || true);
     }
 
     function onLeave() {
-      mouse.live = false;
+      setVisible(false);
     }
 
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      if (mouse.live) {
-        step(lead, mouse.x, mouse.y, 0.22, 0.64);
-        step(shade, mouse.x, mouse.y, 0.11, 0.72);
-      } else {
-        step(lead, lead[0].x, lead[0].y, 0.08, 0.86);
-        step(shade, shade[0].x, shade[0].y, 0.05, 0.9);
-      }
-
-      ctx.save();
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-
-      ctx.shadowColor = "rgba(255, 246, 220, 0.4)";
-      ctx.shadowBlur = 26;
-      ctx.strokeStyle = "rgba(255, 246, 220, 0.16)";
-      ctx.lineWidth = 12;
-      ctx.setLineDash([1.5, 10]);
-      path(ctx, shade);
-      ctx.stroke();
-
-      ctx.shadowBlur = 12;
-      ctx.strokeStyle = "rgba(255, 250, 235, 0.42)";
-      ctx.lineWidth = 1.6;
-      ctx.setLineDash([1.2, 6.5]);
-      path(ctx, lead);
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-      ctx.setLineDash([]);
-
-      for (let i = 0; i < lead.length; i += 1) {
-        const t = 1 - i / (lead.length - 1);
-        const radius = 0.55 + t * 1.7;
-        const alpha = 0.12 + t * 0.55;
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255, 248, 230, ${alpha})`;
-        ctx.arc(lead[i].x, lead[i].y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.restore();
-      raf = requestAnimationFrame(draw);
-    }
-
-    resize();
-    raf = requestAnimationFrame(draw);
-    window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMove, { passive: true });
     document.addEventListener("mouseleave", onLeave);
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
+      document.documentElement.classList.remove("has-custom-cursor");
     };
-  }, []);
+  }, [enabled, leadX, leadY]);
+
+  if (!enabled) return null;
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[70] hidden md:block"
-    />
+      className="pointer-events-none fixed inset-0 z-[90] hidden md:block"
+      style={{ opacity: visible ? 1 : 0 }}
+    >
+      <motion.div
+        className="absolute top-0 left-0 size-1.5 rounded-full bg-[#f3f1ea] will-change-transform"
+        style={{
+          x: leadX,
+          y: leadY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+      />
+      <TrailDot followX={leadX} followY={leadY} index={1} total={DOTS} />
+    </div>
   );
 }

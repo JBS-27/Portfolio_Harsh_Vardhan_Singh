@@ -192,6 +192,41 @@ const tones: Record<string, string> = {
   SQL: "text-[#93C5FD] bg-[#93C5FD]/10",
 };
 
+export const skillGlow: Record<string, string> = {
+  React: "rgba(97, 218, 251, 0.38)",
+  "Next.js": "rgba(255, 255, 255, 0.28)",
+  TypeScript: "rgba(49, 120, 198, 0.4)",
+  JavaScript: "rgba(247, 223, 30, 0.32)",
+  "Tailwind CSS": "rgba(56, 189, 248, 0.36)",
+  "HTML / CSS": "rgba(227, 79, 38, 0.36)",
+  "Framer Motion": "rgba(255, 0, 85, 0.32)",
+  "Node.js": "rgba(95, 160, 78, 0.38)",
+  Express: "rgba(255, 255, 255, 0.22)",
+  FastAPI: "rgba(0, 150, 136, 0.4)",
+  Python: "rgba(55, 118, 171, 0.4)",
+  "REST APIs": "rgba(103, 200, 212, 0.32)",
+  JWT: "rgba(251, 191, 36, 0.3)",
+  TensorFlow: "rgba(255, 111, 0, 0.38)",
+  "scikit-learn": "rgba(247, 147, 30, 0.36)",
+  Streamlit: "rgba(255, 75, 75, 0.34)",
+  LLMs: "rgba(124, 58, 237, 0.36)",
+  "CNN–LSTM–GRU": "rgba(103, 200, 212, 0.32)",
+  SHAP: "rgba(96, 165, 250, 0.34)",
+  "RLHF foundations": "rgba(251, 191, 36, 0.3)",
+  MongoDB: "rgba(71, 162, 72, 0.4)",
+  MySQL: "rgba(68, 121, 161, 0.38)",
+  Postgres: "rgba(65, 105, 225, 0.38)",
+  SQL: "rgba(147, 197, 253, 0.3)",
+};
+
+export function SkillGlyph({ name, className }: { name: string; className?: string }) {
+  const Icon = icons[name];
+  if (!Icon) {
+    return <span className="font-mono text-[10px] tracking-[0.12em]">{name[0]}</span>;
+  }
+  return <Icon className={className} />;
+}
+
 export function SkillChip({ name }: { name: string }) {
   const Icon = icons[name];
   return (

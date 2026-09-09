@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { about, learningNow, site, skillGroups } from "@/lib/data";
+import { about, site } from "@/lib/data";
 import { FadeIn } from "@/components/fade-in";
 import { SectionHeading } from "@/components/section-heading";
 import { StatNum } from "@/components/stat-num";
+import { SystemsOnboard } from "@/components/systems-onboard";
 
 export function About() {
   return (
@@ -79,24 +80,7 @@ export function About() {
           ))}
         </dl>
 
-        <div id="skills" className="mt-24 scroll-mt-28 border-t border-white/10 pt-12">
-          <p className="type-meta text-faint">Systems onboard</p>
-          <div className="mt-8 grid gap-10 sm:grid-cols-2">
-            {skillGroups.slice(0, 4).map((group) => (
-              <div key={group.title}>
-                <h3 className="font-display text-xl tracking-[-0.03em] text-ink">
-                  {group.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">
-                  {group.items.join("  ·  ")}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="type-meta mt-10 text-faint">
-            {`Learning // ${learningNow.join(" / ")}`}
-          </p>
-        </div>
+        <SystemsOnboard />
       </div>
     </section>
   );

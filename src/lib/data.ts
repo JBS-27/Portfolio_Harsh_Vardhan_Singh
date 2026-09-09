@@ -78,7 +78,8 @@ export type ProjectCoverMotif =
   | "ledger"
   | "agent"
   | "globe"
-  | "orbit";
+  | "orbit"
+  | "estate";
 
 export type ProjectKind = "featured" | "secondary" | "experimental";
 
@@ -321,6 +322,51 @@ export const projects: Project[] = [
         "pypdf",
         "Playwright (planned)",
       ],
+    },
+  },
+  {
+    slug: "buildestate",
+    title: "BuildEstate",
+    subtitle: "AI luxury real estate",
+    year: "2026",
+    mission: "07",
+    kind: "secondary",
+    role: "Full-stack",
+    description:
+      "An AI-powered luxury real estate platform — a Vercel frontend over a Python/FastAPI valuation service that prices a property before the brochure does.",
+    tags: ["Vercel", "Python", "FastAPI", "Valuation models"],
+    discipline: "Product / AI / Interface",
+    image: "/projects/buildestate.svg",
+    cover: { from: "#0a0804", to: "#1a140c", motif: "estate" },
+    caseStudy: {
+      problem:
+        "Luxury inventory is sold on photography and intuition. Brokers still guess a number, then spend a week justifying it. Buyers feel the gap immediately.",
+      role: "Full-stack — Vercel interface, FastAPI valuation service, and the model that has to hold a glance on a listing card.",
+      approach: [
+        "Treat the listing as a product surface: one photograph, one price, no dashboard clutter.",
+        "Run predictive valuation in Python/FastAPI so the number is a model output, not a typed guess.",
+        "Ship the storefront on Vercel so the frontend stays fast enough for a buyer who will not wait.",
+      ],
+      decisions: [
+        {
+          title: "Price is the headline",
+          body: "If the valuation is buried behind filters, it is decoration. The model has to sit on the card.",
+        },
+        {
+          title: "Separate the brain from the window",
+          body: "Vercel serves the house. FastAPI serves the number. Neither should wait on the other to look finished.",
+        },
+        {
+          title: "Luxury is restraint",
+          body: "The interface borrows from the street: huge type, one idea, no second chance to explain the amenities list.",
+        },
+      ],
+      results: [
+        { label: "Frontend", value: "Vercel" },
+        { label: "Valuation", value: "FastAPI" },
+        { label: "Intent", value: "Price before brochure" },
+      ],
+      tech: ["Vercel", "Python", "FastAPI", "Predictive valuation"],
     },
   },
   {

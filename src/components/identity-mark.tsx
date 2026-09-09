@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useHeroSignal } from "@/components/hero-signal";
+import { site } from "@/lib/data";
 import { cx } from "@/lib/utils";
 
 const lines = [
@@ -16,6 +17,7 @@ export function IdentityMark() {
 
   return (
     <h1 className="relative w-full min-w-0">
+      <span className="sr-only">{site.name} — The Initiator</span>
       <button
         type="button"
         aria-label={

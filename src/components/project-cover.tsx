@@ -81,6 +81,16 @@ const motifs: Record<ProjectCoverMotif, ReactNode> = {
       <circle cx="112" cy="208" r="4" fill="currentColor" />
     </>
   ),
+  estate: (
+    <>
+      <rect x="48" y="72" width="224" height="132" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M48 118h224M112 72v132M208 72v132" stroke="currentColor" strokeWidth="0.7" />
+      <rect x="128" y="138" width="64" height="66" fill="none" stroke="currentColor" strokeWidth="1.1" />
+      <path d="M160 36l118 36H42l118-36z" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="72" cy="96" r="2.4" fill="currentColor" />
+      <circle cx="248" cy="96" r="2.4" fill="currentColor" />
+    </>
+  ),
 };
 
 export function ProjectCover({

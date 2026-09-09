@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { Footer } from "@/components/footer";
+import { ProjectMedia } from "@/components/project-media";
 import { getProject, projects } from "@/lib/data";
 
 type PageProps = {
@@ -84,12 +84,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
 
         <div className="relative mt-12 overflow-hidden">
           <div className="relative aspect-[16/8]">
-            <Image
-              src={project.image}
-              alt={`${project.title} — ${project.subtitle}`}
-              fill
+            <ProjectMedia
+              project={project}
               sizes="(min-width: 1024px) 960px, 100vw"
-              className="object-cover"
               priority
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/35 to-transparent" />

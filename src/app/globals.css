@@ -25,6 +25,13 @@ html {
   overflow-x: hidden;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+
 body {
   background: #000;
   overflow-x: hidden;

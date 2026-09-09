@@ -64,6 +64,7 @@ export function Hero() {
                 trigger="mount"
                 glow
                 className="h-full"
+                style={{}}
               />
             </div>
             <p className="type-meta relative mt-8 text-faint">Scroll</p>

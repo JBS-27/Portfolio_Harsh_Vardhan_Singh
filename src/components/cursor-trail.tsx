@@ -63,7 +63,7 @@ export function CursorTrail() {
     const shade = seed(SHADOW, -200, -200);
     let raf = 0;
 
-    function resize() {
+    const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
@@ -72,7 +72,7 @@ export function CursorTrail() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
+    };
 
     function onMove(event: MouseEvent) {
       mouse.x = event.clientX;
@@ -84,7 +84,7 @@ export function CursorTrail() {
       mouse.live = false;
     }
 
-    function draw() {
+    const draw = () => {
       ctx.clearRect(0, 0, width, height);
 
       if (mouse.live) {

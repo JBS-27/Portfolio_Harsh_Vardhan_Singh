@@ -394,7 +394,7 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
 
     const last = { x: 0, y: 0 };
 
-    function setNdc(event: PointerEvent, local: boolean) {
+    const setNdc = (event: PointerEvent, local: boolean) => {
       if (local) {
         const rect = node.getBoundingClientRect();
         control.current.ndcX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -403,9 +403,9 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
         control.current.ndcX = (event.clientX / window.innerWidth - 0.5) * 2;
         control.current.ndcY = (event.clientY / window.innerHeight - 0.5) * 2;
       }
-    }
+    };
 
-    function onMove(event: PointerEvent) {
+    const onMove = (event: PointerEvent) => {
       const c = control.current;
       const rect = node.getBoundingClientRect();
       const inside =
@@ -428,7 +428,7 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
       last.y = event.clientY;
     }
 
-    function onDown(event: PointerEvent) {
+    const onDown = (event: PointerEvent) => {
       const c = control.current;
       c.dragging = true;
       c.over = true;

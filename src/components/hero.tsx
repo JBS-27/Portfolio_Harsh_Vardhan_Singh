@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { HeroSignalProvider } from "@/components/hero-signal";
@@ -96,13 +97,13 @@ export function Hero() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.74 }}
             >
-              <a
+              <Link
                 href="/#work"
                 className="group inline-flex items-center gap-3 font-display text-lg tracking-[-0.03em] text-ink"
               >
                 Selected work
                 <span className="block h-px w-10 origin-left bg-ink/50 transition-all duration-500 group-hover:w-16" />
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
 

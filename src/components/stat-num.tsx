@@ -29,6 +29,8 @@ export function StatNum({
       return;
     }
 
+    const target = value;
+
     const node = ref.current;
     if (!node) return;
 
@@ -36,7 +38,7 @@ export function StatNum({
       if (played.current) return;
       played.current = true;
       if (reduce) {
-        setShown(format(value, decimals, suffix));
+        setShown(format(target, decimals, suffix));
         return;
       }
 
@@ -46,9 +48,9 @@ export function StatNum({
       function tick(now: number) {
         const t = Math.min(1, (now - start) / duration);
         const eased = 1 - (1 - t) ** 3;
-        setShown(format(value * eased, decimals, suffix));
+        setShown(format(target * eased, decimals, suffix));
         if (t < 1) requestAnimationFrame(tick);
-        else setShown(format(value, decimals, suffix));
+        else setShown(format(target, decimals, suffix));
       }
 
       requestAnimationFrame(tick);

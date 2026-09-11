@@ -4,6 +4,7 @@ import { Atmosphere } from "@/components/atmosphere";
 import { CursorTrail } from "@/components/cursor-trail";
 import { Navbar } from "@/components/navbar";
 import { site } from "@/lib/data";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const sans = Instrument_Sans({
@@ -32,8 +33,10 @@ const mono = Azeret_Mono({
   display: "swap",
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${site.name} — ${site.role}`,
     template: `%s — ${site.name}`,
@@ -49,24 +52,33 @@ export const metadata: Metadata = {
     "BuildEstate",
     "AQI forecasting",
   ],
-  authors: [{ name: site.name, url: site.url }],
+  authors: [{ name: site.name, url: siteUrl }],
   creator: site.name,
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: site.url,
+    url: siteUrl,
     siteName: site.name,
     title: `${site.name} — ${site.role}`,
     description: site.tagline,
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: `${site.name} — ${site.role}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     creator: "@singharshll52",
     title: `${site.name} — ${site.role}`,
     description: site.tagline,
+    images: ["/twitter-image"],
   },
   alternates: {
-    canonical: site.url,
+    canonical: siteUrl,
   },
 };
 
@@ -81,7 +93,7 @@ const jsonLd = {
   "@type": "Person",
   name: site.name,
   email: site.email,
-  url: site.url,
+  url: siteUrl,
   jobTitle: site.role,
   alumniOf: "Indian Institute of Information Technology, Surat",
   sameAs: [site.socials.github, site.socials.linkedin, site.socials.twitter],

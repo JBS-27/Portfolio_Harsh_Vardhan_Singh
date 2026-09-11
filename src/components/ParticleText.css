@@ -9,6 +9,10 @@
   isolation: isolate;
 }
 
+.particle-text--stage {
+  min-height: 0;
+}
+
 .particle-text__canvas {
   position: absolute;
   inset: 0;

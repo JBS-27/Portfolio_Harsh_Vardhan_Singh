@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -14,7 +14,6 @@ export function StudioGallery() {
   const reduce = useReducedMotion();
   const [open, setOpen] = useState<StudioPiece | null>(null);
   const [paused, setPaused] = useState(false);
-  const hoverTimer = useRef<number>(0);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -31,26 +30,9 @@ export function StudioGallery() {
     };
   }, [open]);
 
-  useEffect(() => {
-    return () => window.clearTimeout(hoverTimer.current);
-  }, []);
-
   function openPiece(piece: StudioPiece) {
-    window.clearTimeout(hoverTimer.current);
     setOpen(piece);
     setPaused(true);
-  }
-
-  function scheduleOpen(piece: StudioPiece) {
-    window.clearTimeout(hoverTimer.current);
-    setPaused(true);
-    if (window.matchMedia("(hover: hover)").matches) {
-      hoverTimer.current = window.setTimeout(() => setOpen(piece), 260);
-    }
-  }
-
-  function cancelOpen() {
-    window.clearTimeout(hoverTimer.current);
   }
 
   return (
@@ -71,7 +53,6 @@ export function StudioGallery() {
         className="relative mt-16 w-full py-8"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => {
-          cancelOpen();
           if (!open) setPaused(false);
         }}
       >
@@ -89,8 +70,6 @@ export function StudioGallery() {
                     key={`${piece.id}-${setIndex}`}
                     type="button"
                     onClick={() => openPiece(piece)}
-                    onMouseEnter={() => scheduleOpen(piece)}
-                    onMouseLeave={cancelOpen}
                     onFocus={() => setPaused(true)}
                     className="group relative h-[min(58vw,300px)] w-[min(90vw,620px)] shrink-0 overflow-hidden rounded-[1.35rem] bg-black text-left sm:h-[min(40vw,560px)] sm:w-[min(78vw,1120px)]"
                   >
@@ -182,7 +161,7 @@ function PieceLink({ piece }: { piece: StudioPiece }) {
   if (external) {
     return (
       <a href={piece.href} target="_blank" rel="noopener noreferrer" className={className}>
-        Open source
+        Open on X
       </a>
     );
   }

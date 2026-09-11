@@ -19,13 +19,13 @@ type Star = {
 
 const SKY: Record<string, number> = {
   hero: 1,
-  about: 0.38,
-  mission: 0.12,
-  work: 0.28,
-  studio: 0.16,
-  notes: 0.34,
-  experience: 0.3,
-  contact: 0.88,
+  about: 1,
+  mission: 1,
+  work: 1,
+  studio: 1,
+  notes: 1,
+  experience: 1,
+  contact: 1,
 };
 
 function randomHeading(speed: number) {

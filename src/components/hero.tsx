@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState } from "react";
 import ParticleText from "@/components/ParticleText";
-import { HeroSignalProvider } from "@/components/hero-signal";
-import { IdentityMark } from "@/components/identity-mark";
+import { HeroSignalProvider, useHeroSignal } from "@/components/hero-signal";
+import { cx } from "@/lib/utils";
 import { site, telemetry } from "@/lib/data";
 
 const InitiatorGlobe = dynamic(
@@ -14,73 +14,92 @@ const InitiatorGlobe = dynamic(
   { ssr: false },
 );
 
-export function Hero() {
+function HeroStage() {
   const reduce = useReducedMotion();
-  const landRef = useRef<HTMLDivElement>(null);
-  const [nameOn, setNameOn] = useState(!!reduce);
-
-  useEffect(() => {
-    const node = landRef.current;
-    if (!node || reduce) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setNameOn(true);
-      },
-      { threshold: 0.28 },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [reduce]);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const [released, setReleased] = useState(false);
+  const { setRevealed } = useHeroSignal();
 
   const { scrollYProgress } = useScroll({
-    target: landRef,
-    offset: ["start start", "end start"],
+    target: pinRef,
+    offset: ["start start", "end end"],
   });
-  const visualY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const visualOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.18]);
-  const typeY = useTransform(scrollYProgress, [0, 1], [0, -20]);
+
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.08, 0.22], [1, 0.35, 0]);
+  const visualY = useTransform(scrollYProgress, [0.86, 1], [24, 0]);
+  const visualOpacity = useTransform(scrollYProgress, [0.86, 1], [0.2, 1]);
+  const typeY = useTransform(scrollYProgress, [0.86, 1], [16, 0]);
+
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    setReleased((was) => (value >= 0.998 ? true : value < 0.99 ? false : was));
+    if (value >= 0.86) setRevealed(true);
+  });
 
   return (
-    <HeroSignalProvider>
-      <section id="hero" className="relative isolate overflow-x-clip">
-        {reduce ? null : (
-          <div className="relative flex h-svh flex-col items-center justify-center px-5">
+    <section id="hero" className="relative isolate">
+      <h1 className="sr-only">{site.name} — The Initiator</h1>
+
+      {reduce ? (
+        <div className="flex h-svh flex-col items-center justify-center px-5">
+          <p className="type-meta mb-6 text-faint">{telemetry.mission}</p>
+          <p className="font-serif text-[clamp(2.4rem,8vw,6rem)] tracking-[-0.04em] text-ink">
+            THE INITIATOR
+          </p>
+          <p className="mt-6 text-center font-display text-[clamp(2.2rem,7vw,5.4rem)] leading-[0.86] tracking-[-0.06em] text-ink">
+            {site.name}
+          </p>
+        </div>
+      ) : (
+        <div ref={pinRef} className="relative h-[240svh] md:h-[280svh]">
+          <div
+            className={cx(
+              "isolate flex h-svh w-full flex-col items-center justify-center overflow-hidden px-5",
+              released ? "absolute inset-x-0 bottom-0" : "fixed inset-x-0 top-0 z-[1]",
+            )}
+          >
             <div className="bloom pointer-events-none absolute inset-0" />
-            <p className="type-meta relative mb-6 text-faint">{telemetry.mission}</p>
-            <div className="relative h-[min(72svh,34rem)] w-full max-w-[1400px] font-serif">
+            <p className="type-meta relative z-10 mb-4 text-faint sm:mb-6">{telemetry.mission}</p>
+            <div className="relative z-10 h-[min(78svh,42rem)] w-full max-w-[1400px]">
               <ParticleText
-                text="THE INITIATOR"
-                fontFamily="inherit"
-                fontWeight={400}
-                fontSize="clamp(3.6rem, 14vw, 11rem)"
+                fromText="THE INITIATOR"
+                toText={"HARSH\nVARDHAN\nSINGH"}
+                progress={scrollYProgress}
+                fromFontFamily="var(--font-display-face), ui-sans-serif, sans-serif"
+                toFontFamily="var(--font-display-face), ui-sans-serif, sans-serif"
+                fromFontWeight={560}
+                toFontWeight={560}
+                fromFontSize="clamp(3.6rem, 11vw, 8.8rem)"
+                toFontSize="clamp(4.2rem, 13vw, 10.8rem)"
                 color="#f3f1ea"
                 highlightColor="#efe6cc"
                 particleSize={2.4}
                 density={3}
-                scatter={220}
-                gatherDuration={1800}
-                stagger={480}
-                trigger="mount"
+                scatter={260}
+                pointerRepel={36}
+                repelRadius={130}
+                idleDrift={0.35}
                 glow
-                className="h-full"
-                style={{}}
+                className="particle-text--stage h-full"
+                style={{ minHeight: 0 }}
               />
             </div>
-            <p className="type-meta relative mt-8 text-faint">Scroll</p>
+            <motion.p style={{ opacity: cueOpacity }} className="type-meta relative z-10 mt-6 text-faint">
+              Scroll
+            </motion.p>
           </div>
-        )}
+        </div>
+      )}
 
-        <div ref={landRef} className="relative min-h-svh overflow-x-clip pt-28 pb-10">
-          <div className="bloom pointer-events-none absolute inset-0" />
+      <div className="relative min-h-svh overflow-x-clip pt-28 pb-10">
+        <div className="bloom pointer-events-none absolute inset-0" />
 
-          <div className="relative z-10 mx-auto min-h-[calc(100svh-7.5rem)] max-w-7xl px-5 sm:px-8">
-            <p className="type-meta mb-6 text-faint">{telemetry.mission}</p>
-            {nameOn ? <IdentityMark /> : (
-              <h1 className="sr-only">{site.name} — The Initiator</h1>
-            )}
+        <div className="relative z-10 mx-auto min-h-[calc(100svh-7.5rem)] max-w-7xl px-5 sm:px-8">
+          <p className="type-meta mb-6 text-faint">{telemetry.mission}</p>
+          <p className="font-serif text-[clamp(1.6rem,3vw,2.4rem)] tracking-[-0.04em] text-ink/80 italic">
+            The Initiator
+          </p>
 
-            <div className="mt-8 grid items-center gap-8 lg:grid-cols-[1.08fr_0.92fr]">
+          <div className="mt-8 grid items-center gap-8 lg:grid-cols-[1.08fr_0.92fr]">
             <motion.div
               style={reduce ? undefined : { y: typeY }}
               className="relative z-20"
@@ -154,19 +173,26 @@ export function Hero() {
             >
               <InitiatorGlobe reduce={!!reduce} />
             </motion.div>
-            </div>
-          </div>
-
-          <div className="relative z-10 mx-auto mt-2 flex max-w-7xl justify-between px-5 sm:px-8">
-            <p className="type-meta text-faint">
-              {`Lat // ${telemetry.lat}`} · {`Lng // ${telemetry.lng}`}
-            </p>
-            <a href="#about" className="type-meta text-muted">
-              Index
-            </a>
           </div>
         </div>
-      </section>
+
+        <div className="relative z-10 mx-auto mt-2 flex max-w-7xl justify-between px-5 sm:px-8">
+          <p className="type-meta text-faint">
+            {`Lat // ${telemetry.lat}`} · {`Lng // ${telemetry.lng}`}
+          </p>
+          <a href="#about" className="type-meta text-muted">
+            Index
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Hero() {
+  return (
+    <HeroSignalProvider>
+      <HeroStage />
     </HeroSignalProvider>
   );
 }

@@ -16,10 +16,10 @@ function TrailDot({
   index: number;
   total: number;
 }) {
-  const stiffness = Math.max(70, 360 - index * 16);
-  const damping = 18 + index * 2;
-  const x = useSpring(followX, { stiffness, damping, mass: 0.38 });
-  const y = useSpring(followY, { stiffness, damping, mass: 0.38 });
+  const stiffness = Math.max(140, 560 - index * 18);
+  const damping = 22 + index * 1.5;
+  const x = useSpring(followX, { stiffness, damping, mass: 0.24 });
+  const y = useSpring(followY, { stiffness, damping, mass: 0.24 });
   const falloff = index / (total - 1);
 
   return (

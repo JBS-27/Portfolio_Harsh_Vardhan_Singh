@@ -47,7 +47,7 @@ export function Navbar() {
       <div className="mx-auto grid h-[4.5rem] max-w-7xl grid-cols-[auto_1fr_auto] items-center px-5 sm:px-8">
         <Link
           href="/"
-          className="font-mono text-[11px] tracking-[0.3em] text-ink uppercase"
+          className="font-mono text-[12px] tracking-[0.32em] text-ink uppercase"
           onClick={() => setOpen(false)}
         >
           {site.initials}
@@ -64,7 +64,7 @@ export function Navbar() {
             return (
               <span key={link.href} className="flex items-center">
                 {index > 0 ? (
-                  <span className="px-2.5 font-mono text-[9px] text-white/20 lg:px-3.5">
+                  <span className="px-2.5 font-mono text-[9px] text-accent/55 lg:px-3.5">
                     /
                   </span>
                 ) : null}

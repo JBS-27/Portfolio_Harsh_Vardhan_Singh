@@ -361,7 +361,7 @@ const ParticleText = ({
       ctx.clearRect(0, 0, width, height);
 
       if (glow && !reducedMotion) {
-        ctx.shadowBlur = particleSize * 3;
+        ctx.shadowBlur = particleSize * 5.8;
         ctx.shadowColor = highlightColor;
       } else {
         ctx.shadowBlur = 0;

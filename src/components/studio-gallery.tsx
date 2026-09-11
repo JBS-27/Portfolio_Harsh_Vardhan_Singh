@@ -81,7 +81,7 @@ export function StudioGallery() {
                       className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/75 via-black/20 to-transparent px-5 py-4 opacity-0 transition duration-400 group-hover:opacity-100">
-                      <p className="type-meta text-white/70">{piece.brand}</p>
+                      <p className="type-meta text-muted">{piece.brand}</p>
                       <p className="mt-1 font-display text-lg tracking-[-0.03em] text-ink">
                         {piece.campaign}
                       </p>

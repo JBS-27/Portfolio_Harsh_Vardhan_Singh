@@ -101,7 +101,7 @@ function sampleRaster(
 
   drawLand(ctx, land, w, h);
   const pixels = ctx.getImageData(0, 0, w, h).data;
-  const stride = budget > 12000 ? 3 : budget > 7000 ? 4 : 5;
+  const stride = budget > 12000 ? 2 : budget > 7000 ? 3 : 4;
 
   for (let y = 0; y < h; y += stride) {
     const rowShift = (y / stride) % 2 === 0 ? 0 : Math.floor(stride * 0.5);
@@ -111,9 +111,9 @@ function sampleRaster(
       const lat = 90 - (y / h) * 180;
       if (Math.abs(lat) > 86) continue;
       const area = Math.cos(lat * DEG);
-      if (hash2(x + 0.3, y + 1.1) > area * 0.97) continue;
-      const warm = hash2(x + 8.2, y + 3.4) > 0.92 ? 3 : 0;
-      pushPoint(positions, seeds, kinds, lon, lat, warm, radius, 0.55);
+      if (hash2(x + 0.3, y + 1.1) > area * 0.995) continue;
+      const warm = hash2(x + 8.2, y + 3.4) > 0.82 ? 3 : 0;
+      pushPoint(positions, seeds, kinds, lon, lat, warm, radius, 0.42);
     }
   }
 }
@@ -185,7 +185,7 @@ export function buildGlobeCloud(
     const total = positions.length / 3;
     for (let i = 0; i < total; i += 1) {
       const kind = kinds[i];
-      if (kind !== 1 && kind !== 2 && i % stride !== 0) continue;
+      if (kind !== 0 && kind !== 3 && i % stride !== 0) continue;
       p.push(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
       s.push(seeds[i]);
       k.push(kind);

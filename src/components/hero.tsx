@@ -42,10 +42,10 @@ function HeroStage() {
       {reduce ? (
         <div className="flex h-svh flex-col items-center justify-center px-5">
           <p className="type-meta mb-6 text-faint">{telemetry.mission}</p>
-          <p className="font-serif text-[clamp(2.4rem,8vw,6rem)] tracking-[-0.04em] text-ink">
+          <p className="font-serif text-[clamp(2.6rem,8.4vw,6.4rem)] tracking-[-0.04em] text-ink [text-shadow:0_0_18px_rgb(240_197_106_/_0.4)]">
             THE INITIATOR
           </p>
-          <p className="mt-6 text-center font-display text-[clamp(2.2rem,7vw,5.4rem)] leading-[0.86] tracking-[-0.06em] text-ink">
+          <p className="hero-name mt-6 text-center">
             {site.name}
           </p>
         </div>
@@ -66,12 +66,12 @@ function HeroStage() {
                 progress={scrollYProgress}
                 fromFontFamily="var(--font-display-face), ui-sans-serif, sans-serif"
                 toFontFamily="var(--font-display-face), ui-sans-serif, sans-serif"
-                fromFontWeight={560}
-                toFontWeight={560}
-                fromFontSize="clamp(3.6rem, 11vw, 8.8rem)"
-                toFontSize="clamp(4.2rem, 13vw, 10.8rem)"
-                color="#f3f1ea"
-                highlightColor="#efe6cc"
+                fromFontWeight={640}
+                toFontWeight={640}
+                fromFontSize="clamp(3.8rem, 11.5vw, 9.2rem)"
+                toFontSize="clamp(4.5rem, 13.6vw, 11.4rem)"
+                color="#fff8ec"
+                highlightColor="#f0c56a"
                 particleSize={2.4}
                 density={3}
                 scatter={260}
@@ -95,7 +95,7 @@ function HeroStage() {
 
         <div className="relative z-10 mx-auto min-h-[calc(100svh-7.5rem)] max-w-7xl px-5 sm:px-8">
           <p className="type-meta mb-6 text-faint">{telemetry.mission}</p>
-          <p className="font-serif text-[clamp(1.6rem,3vw,2.4rem)] tracking-[-0.04em] text-ink/80 italic">
+          <p className="font-serif text-[clamp(1.75rem,3.2vw,2.6rem)] tracking-[-0.04em] text-accent italic [text-shadow:0_0_14px_rgb(240_197_106_/_0.35)]">
             The Initiator
           </p>
 
@@ -105,7 +105,7 @@ function HeroStage() {
               className="relative z-20"
             >
               <motion.p
-                className="type-sub mt-10 max-w-[22ch] text-ink/90 sm:max-w-[26ch]"
+                className="type-sub mt-10 max-w-[22ch] sm:max-w-[26ch]"
                 initial={reduce ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.75 }}

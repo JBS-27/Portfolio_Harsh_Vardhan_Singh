@@ -18,8 +18,8 @@ export function SectionHeading({
   return (
     <div className={cx("max-w-4xl", className)}>
       <p className="type-meta mb-6 flex items-center gap-3 text-faint">
-        <span className="text-ink/70">{index}</span>
-        <span className="text-white/20">/</span>
+        <span className="text-accent">{index}</span>
+        <span className="text-accent/50">/</span>
         {eyebrow}
       </p>
       {title ? (

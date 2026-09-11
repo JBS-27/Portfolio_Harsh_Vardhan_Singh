@@ -15,6 +15,9 @@ type Star = {
   idleVx: number;
   idleVy: number;
   hue: number;
+  twinkleAmp: number;
+  twinkleSpeed: number;
+  wander: number;
 };
 
 const SKY: Record<string, number> = {
@@ -72,22 +75,25 @@ export function Atmosphere() {
 
     function seed() {
       stars = Array.from({ length: count }, () => {
-        const speed = 0.02 + Math.random() * 0.12;
+        const speed = 0.04 + Math.random() * 0.2;
         const heading = randomHeading(speed);
         const depth = Math.random();
         return {
           x: Math.random() * width,
           y: Math.random() * height,
-          r: depth < 0.72 ? Math.random() ** 2.6 * 1.05 + 0.12 : Math.random() * 1.5 + 0.4,
+          r: depth < 0.72 ? Math.random() ** 2.4 * 1.15 + 0.14 : Math.random() * 1.65 + 0.45,
           depth,
           phase: Math.random() * Math.PI * 2,
-          twinkle: Math.random() < 0.48,
-          spark: Math.random() < 0.03,
+          twinkle: Math.random() < 0.88,
+          spark: Math.random() < 0.07,
           vx: heading.vx,
           vy: heading.vy,
           idleVx: heading.vx,
           idleVy: heading.vy,
-          hue: Math.random() < 0.1 ? 1 : 0,
+          hue: Math.random() < 0.16 ? 1 : 0,
+          twinkleAmp: 0.14 + Math.random() * 0.26,
+          twinkleSpeed: 0.018 + Math.random() * 0.042,
+          wander: 0.55 + Math.random() * 1.35,
         };
       });
     }
@@ -169,8 +175,8 @@ export function Atmosphere() {
 
       for (const star of stars) {
         if (!reduce) {
-          if (Math.random() < 0.0012) {
-            const next = randomHeading(0.02 + Math.random() * 0.12);
+          if (Math.random() < 0.008) {
+            const next = randomHeading(0.035 + Math.random() * 0.22);
             star.idleVx = next.vx;
             star.idleVy = next.vy;
           }
@@ -186,10 +192,12 @@ export function Atmosphere() {
             star.vy += (dy / dist) * force * 0.35;
           }
 
-          star.vx += (star.idleVx - star.vx) * 0.02;
-          star.vy += (star.idleVy - star.vy) * 0.02;
-          star.vx *= 0.99;
-          star.vy *= 0.99;
+          star.vx += Math.sin(frame * 0.011 + star.phase) * 0.006 * star.wander;
+          star.vy += Math.cos(frame * 0.014 + star.phase * 1.7) * 0.006 * star.wander;
+          star.vx += (star.idleVx - star.vx) * 0.018;
+          star.vy += (star.idleVy - star.vy) * 0.018;
+          star.vx *= 0.985;
+          star.vy *= 0.985;
           star.x += star.vx;
           star.y += star.vy;
           wrap(star);
@@ -198,9 +206,12 @@ export function Atmosphere() {
         const layer = 0.25 + star.depth * 0.9;
         const px = star.x + parallax.x * 12 * layer;
         const py = star.y + parallax.y * 8 * layer;
-        const base = (0.16 + star.depth * 0.55) * sky.value;
+        const base = (0.18 + star.depth * 0.58) * sky.value;
+        const pulse = Math.sin(frame * star.twinkleSpeed + star.phase);
+        const flicker = Math.sin(frame * star.twinkleSpeed * 2.4 + star.phase * 2.1);
         const twinkle = !reduce && star.twinkle
-          ? base + (Math.sin(frame * (0.012 + star.depth * 0.014) + star.phase) + 1) * (0.08 + star.depth * 0.06) * sky.value
+          ? base * (0.28 + 0.72 * (0.5 + 0.5 * pulse))
+            + (flicker + 1) * star.twinkleAmp * sky.value
           : base;
 
         if (star.spark && twinkle > 0.4) {

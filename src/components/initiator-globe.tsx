@@ -20,11 +20,13 @@ const pointVertex = /* glsl */ `
   uniform float uPixelRatio;
   uniform float uReveal;
   uniform float uHover;
+  uniform float uTime;
   uniform vec3 uLightDir;
   varying float vAlpha;
   varying float vSeed;
   varying float vKind;
   varying float vLit;
+  varying float vTwinkle;
 
   void main() {
     vec4 world = modelMatrix * vec4(position, 1.0);
@@ -34,18 +36,31 @@ const pointVertex = /* glsl */ `
 
     float depth = smoothstep(-0.06, 0.72, facing);
     float lit = pow(max(dot(worldN, normalize(uLightDir)), 0.0), 12.0);
+    float isLand = 1.0 - step(0.5, aKind) + step(2.5, aKind);
+    float isGold = step(2.5, aKind);
+    float isCoast = step(0.5, aKind) * (1.0 - step(1.5, aKind));
+    float isGrid = step(1.5, aKind) * (1.0 - step(2.5, aKind));
+    float pulse = sin(uTime * (3.4 + aSeed * 4.6) + aSeed * 21.0);
+    float flicker = sin(uTime * (8.2 + aSeed * 9.1) + aSeed * 40.0);
+    vTwinkle = mix(0.78, 0.38 + 0.62 * pulse, isLand);
+    vTwinkle *= mix(1.0, 0.58 + 0.42 * flicker, isLand);
     vLit = lit * uHover;
     vSeed = aSeed;
     vKind = aKind;
-    vAlpha = mix(0.03, 1.0, depth) * (1.0 + uReveal * 0.1);
-    if (aKind > 1.5 && aKind < 2.5) vAlpha *= 0.2;
+    vAlpha = mix(0.08, 1.0, depth) * (1.0 + uReveal * 0.14);
+    vAlpha *= mix(1.0, 0.1, isGrid);
+    vAlpha *= mix(1.0, 0.4, isCoast);
+    vAlpha *= mix(1.0, 1.55 * max(vTwinkle, 0.42), isLand);
 
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mv;
 
-    float kindSize = aKind > 2.5 ? 1.05 : aKind > 1.5 ? 0.58 : aKind > 0.5 ? 1.12 : 0.88;
-    gl_PointSize = kindSize * (0.9 + aSeed * 0.4) * uPixelRatio;
-    gl_PointSize = clamp(gl_PointSize, 0.75, 2.35);
+    float kindSize = mix(1.72, 2.2, isGold);
+    kindSize = mix(kindSize, 0.58, isCoast);
+    kindSize = mix(kindSize, 0.38, isGrid);
+    kindSize *= mix(1.0, 0.82 + 0.38 * pulse, isLand);
+    gl_PointSize = kindSize * (1.12 + aSeed * 0.6) * uPixelRatio;
+    gl_PointSize = clamp(gl_PointSize, 1.35, 4.6);
   }
 `;
 
@@ -54,22 +69,25 @@ const pointFragment = /* glsl */ `
   varying float vSeed;
   varying float vKind;
   varying float vLit;
+  varying float vTwinkle;
 
   void main() {
     vec2 p = gl_PointCoord * 2.0 - 1.0;
     float d = dot(p, p);
     if (d > 1.0) discard;
-    float glow = exp(-d * 3.4);
+    float glow = exp(-d * 2.55);
 
     vec3 white = vec3(1.0, 1.0, 1.0);
-    vec3 warm = vec3(1.0, 0.992, 0.949);
-    vec3 gold = vec3(1.0, 0.945, 0.659);
+    vec3 warm = vec3(1.0, 0.95, 0.78);
+    vec3 gold = vec3(1.0, 0.88, 0.42);
+    float isLand = 1.0 - step(0.5, vKind) + step(2.5, vKind);
     float t = fract(vSeed * 6.13);
-    vec3 color = mix(white, warm, smoothstep(0.55, 1.0, t) * 0.55);
-    if (vKind > 2.5) color = mix(color, gold, 0.42);
+    vec3 color = mix(white, warm, smoothstep(0.28, 1.0, t) * 0.78);
+    color = mix(color, gold, step(2.5, vKind) * 0.72);
     color = mix(color, white, vLit * 0.35);
+    color *= mix(0.82, 0.88 + 0.55 * vTwinkle, isLand);
 
-    float alpha = glow * vAlpha * (0.7 + vSeed * 0.18 + vLit * 0.22);
+    float alpha = glow * vAlpha * (0.88 + vSeed * 0.2 + vLit * 0.22);
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -109,7 +127,7 @@ function useGlobeCloud() {
     }
     const fine = window.matchMedia("(pointer: fine)").matches;
     const narrow = window.innerWidth < 768;
-    const budget = narrow ? 4200 : fine ? 14500 : 7800;
+    const budget = narrow ? 5200 : fine ? 16800 : 9000;
     return buildGlobeCloud(landData, budget, GLOBE_RADIUS);
   }, []);
 }
@@ -133,6 +151,7 @@ function LandPoints({
           uPixelRatio: { value: 1 },
           uReveal: { value: 0 },
           uHover: { value: 0 },
+          uTime: { value: 0 },
           uLightDir: { value: new THREE.Vector3(0.15, 0.2, 1) },
         },
         vertexShader: pointVertex,
@@ -146,10 +165,11 @@ function LandPoints({
 
   useEffect(() => () => material.dispose(), [material]);
 
-  useFrame(({ gl: renderer }) => {
+  useFrame(({ gl: renderer, clock }) => {
     material.uniforms.uPixelRatio.value = Math.min(renderer.getPixelRatio(), 2);
     material.uniforms.uReveal.value = revealRef.current;
     material.uniforms.uHover.value = reduce ? 0 : hoverRef.current;
+    material.uniforms.uTime.value = reduce ? 0 : clock.elapsedTime;
     material.uniforms.uLightDir.value.copy(lightRef.current);
   });
 

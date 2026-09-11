@@ -85,7 +85,7 @@ export function ProjectCard({ project, featured, onOpen }: ProjectCardProps) {
           <h3 className="mt-3 font-display text-[clamp(1.85rem,3.4vw,3.15rem)] leading-[0.95] tracking-[-0.045em] text-ink">
             {project.title}
           </h3>
-          <p className="mt-2 font-serif text-[1.05rem] text-white/55 italic">
+          <p className="mt-2 font-serif text-[1.12rem] text-muted italic">
             {project.subtitle}
           </p>
           <p className="type-meta mt-3 text-faint">{project.discipline}</p>

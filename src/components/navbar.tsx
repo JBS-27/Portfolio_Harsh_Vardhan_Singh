@@ -15,19 +15,47 @@ export function Navbar() {
   const [active, setActive] = useState("");
 
   useEffect(() => {
+    let ticking = false;
     function onScroll() {
-      setScrolled(window.scrollY > 16);
-      let marker = "";
-      for (const id of sections) {
-        const node = document.getElementById(id);
-        if (node && node.getBoundingClientRect().top < 160) marker = id;
-      }
-      setActive(marker);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 16);
+        ticking = false;
+      });
     }
 
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const visibility = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          visibility.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
+        }
+        let best = "";
+        let bestRatio = 0;
+        for (const [id, ratio] of visibility) {
+          if (ratio > bestRatio) {
+            best = id;
+            bestRatio = ratio;
+          }
+        }
+        setActive(best);
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0.15, 0.4, 0.7] },
+    );
+
+    for (const id of sections) {
+      const node = document.getElementById(id);
+      if (node) observer.observe(node);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -41,7 +69,7 @@ export function Navbar() {
     <header
       className={cx(
         "fixed inset-x-0 top-0 z-40 transition-[background,border-color] duration-500",
-        scrolled ? "border-b border-white/8 bg-black/70 backdrop-blur-md" : "border-b border-transparent bg-transparent",
+        scrolled ? "border-b border-white/8 bg-black/82" : "border-b border-transparent bg-transparent",
       )}
     >
       <div className="mx-auto grid h-[4.5rem] max-w-7xl grid-cols-[auto_1fr_auto] items-center px-5 sm:px-8">

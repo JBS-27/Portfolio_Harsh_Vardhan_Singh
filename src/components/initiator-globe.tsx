@@ -6,6 +6,7 @@ import * as THREE from "three";
 import land from "@/data/ne_110m_land.json";
 import { useHeroSignal } from "@/components/hero-signal";
 import { buildGlobeCloud, type LandCollection } from "@/lib/globe-points";
+import { getRuntimeQuality, type RuntimeQuality } from "@/lib/runtime-quality";
 
 const landData = land as unknown as LandCollection;
 
@@ -115,7 +116,7 @@ const atmosphereFragment = /* glsl */ `
   }
 `;
 
-function useGlobeCloud() {
+function useGlobeCloud(budget: number) {
   return useMemo(() => {
     if (typeof document === "undefined") {
       return {
@@ -125,11 +126,8 @@ function useGlobeCloud() {
         count: 0,
       };
     }
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    const narrow = window.innerWidth < 768;
-    const budget = narrow ? 5200 : fine ? 16800 : 9000;
     return buildGlobeCloud(landData, budget, GLOBE_RADIUS);
-  }, []);
+  }, [budget]);
 }
 
 function LandPoints({
@@ -137,13 +135,15 @@ function LandPoints({
   revealRef,
   lightRef,
   hoverRef,
+  pointBudget,
 }: {
   reduce: boolean;
   revealRef: MutableRefObject<number>;
   lightRef: MutableRefObject<THREE.Vector3>;
   hoverRef: MutableRefObject<number>;
+  pointBudget: number;
 }) {
-  const cloud = useGlobeCloud();
+  const cloud = useGlobeCloud(pointBudget);
   const material = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -187,7 +187,13 @@ function LandPoints({
   return <points geometry={geom} material={material} />;
 }
 
-function AtmosphereShell({ revealRef }: { revealRef: MutableRefObject<number> }) {
+function AtmosphereShell({
+  revealRef,
+  segments,
+}: {
+  revealRef: MutableRefObject<number>;
+  segments: number;
+}) {
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -209,19 +215,25 @@ function AtmosphereShell({ revealRef }: { revealRef: MutableRefObject<number> })
 
   return (
     <mesh scale={1.03} material={mat}>
-      <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
+      <sphereGeometry args={[GLOBE_RADIUS, segments, segments]} />
     </mesh>
   );
 }
 
-function Halo({ revealRef }: { revealRef: MutableRefObject<number> }) {
+function Halo({
+  revealRef,
+  segments,
+}: {
+  revealRef: MutableRefObject<number>;
+  segments: number;
+}) {
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   useFrame(() => {
     if (mat.current) mat.current.opacity = 0.01 + revealRef.current * 0.008;
   });
   return (
     <mesh scale={1.055}>
-      <sphereGeometry args={[GLOBE_RADIUS, 48, 48]} />
+      <sphereGeometry args={[GLOBE_RADIUS, segments, segments]} />
       <meshBasicMaterial
         ref={mat}
         color="#fffdf2"
@@ -274,6 +286,14 @@ function Craft({ reduce }: { reduce: boolean }) {
   );
 }
 
+function ResumeFrames({ active }: { active: boolean }) {
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    if (active) invalidate();
+  }, [active, invalidate]);
+  return null;
+}
+
 function LockedCamera() {
   const { camera } = useThree();
   useFrame(() => {
@@ -304,9 +324,11 @@ type GlobeControl = {
 function GlobeRig({
   reduce,
   control,
+  quality,
 }: {
   reduce: boolean;
   control: MutableRefObject<GlobeControl>;
+  quality: RuntimeQuality;
 }) {
   const root = useRef<THREE.Group>(null);
   const spin = useRef<THREE.Group>(null);
@@ -377,14 +399,20 @@ function GlobeRig({
         <group rotation={[0.3, 0, 0.18]}>
           <group ref={spin}>
             <mesh>
-              <sphereGeometry args={[GLOBE_RADIUS * 0.978, 64, 64]} />
+              <sphereGeometry args={[GLOBE_RADIUS * 0.978, quality.globeSegments, quality.globeSegments]} />
               <meshBasicMaterial color="#000000" />
             </mesh>
-            <LandPoints reduce={reduce} revealRef={revealRef} lightRef={lightRef} hoverRef={hoverRef} />
+            <LandPoints
+              reduce={reduce}
+              revealRef={revealRef}
+              lightRef={lightRef}
+              hoverRef={hoverRef}
+              pointBudget={quality.globePoints}
+            />
           </group>
         </group>
-        <AtmosphereShell revealRef={revealRef} />
-        <Halo revealRef={revealRef} />
+        <AtmosphereShell revealRef={revealRef} segments={quality.globeSegments} />
+        <Halo revealRef={revealRef} segments={Math.max(16, quality.globeSegments - 8)} />
         <Suspense fallback={null}>
           <Craft reduce={reduce} />
         </Suspense>
@@ -397,6 +425,10 @@ function GlobeRig({
 export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [hint, setHint] = useState(true);
+  const [near, setNear] = useState(false);
+  const [live, setLive] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
+  const quality = useMemo(() => getRuntimeQuality(), []);
   const control = useRef<GlobeControl>({
     ndcX: 0,
     ndcY: 0,
@@ -409,34 +441,49 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
   });
 
   useEffect(() => {
+    const sync = () => setPageVisible(!document.hidden);
+    sync();
+    document.addEventListener("visibilitychange", sync);
+    return () => document.removeEventListener("visibilitychange", sync);
+  }, []);
+
+  useEffect(() => {
     const node = wrapRef.current;
-    if (!node || reduce) return;
+    if (!node) return;
+    const preload = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setNear(true);
+      },
+      { rootMargin: "50% 0px" },
+    );
+    const play = new IntersectionObserver(
+      ([entry]) => setLive(entry.isIntersecting && entry.intersectionRatio >= 0.15),
+      { threshold: [0, 0.15, 0.35, 0.6] },
+    );
+    preload.observe(node);
+    play.observe(node);
+    return () => {
+      preload.disconnect();
+      play.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const node = wrapRef.current;
+    if (!node || reduce || !live) return;
 
     const last = { x: 0, y: 0 };
 
-    const setNdc = (event: PointerEvent, local: boolean) => {
-      if (local) {
-        const rect = node.getBoundingClientRect();
-        control.current.ndcX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        control.current.ndcY = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-      } else {
-        control.current.ndcX = (event.clientX / window.innerWidth - 0.5) * 2;
-        control.current.ndcY = (event.clientY / window.innerHeight - 0.5) * 2;
-      }
+    const setLocalNdc = (event: PointerEvent) => {
+      const rect = node.getBoundingClientRect();
+      control.current.ndcX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      control.current.ndcY = ((event.clientY - rect.top) / rect.height) * 2 - 1;
     };
 
-    const onMove = (event: PointerEvent) => {
+    const onLocalMove = (event: PointerEvent) => {
       const c = control.current;
-      const rect = node.getBoundingClientRect();
-      const inside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-
-      if (!c.dragging) c.over = inside;
-      setNdc(event, c.over || c.dragging);
-
+      c.over = true;
+      setLocalNdc(event);
       if (!c.dragging) return;
       const dx = event.clientX - last.x;
       const dy = event.clientY - last.y;
@@ -446,7 +493,18 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
       c.angVy = dy * 0.0044;
       last.x = event.clientX;
       last.y = event.clientY;
-    }
+    };
+
+    const onWindowMove = (event: PointerEvent) => {
+      const c = control.current;
+      if (c.dragging) {
+        onLocalMove(event);
+        return;
+      }
+      if (c.over) return;
+      c.ndcX = (event.clientX / window.innerWidth - 0.5) * 2;
+      c.ndcY = (event.clientY / window.innerHeight - 0.5) * 2;
+    };
 
     const onDown = (event: PointerEvent) => {
       const c = control.current;
@@ -456,11 +514,11 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
       c.angVy = 0;
       last.x = event.clientX;
       last.y = event.clientY;
-      setNdc(event, true);
+      setLocalNdc(event);
       node.setPointerCapture(event.pointerId);
       document.body.style.userSelect = "none";
       setHint(false);
-    }
+    };
 
     function onUp() {
       control.current.dragging = false;
@@ -472,19 +530,23 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
     }
 
     node.addEventListener("pointerdown", onDown);
+    node.addEventListener("pointermove", onLocalMove, { passive: true });
     node.addEventListener("pointerleave", onLeave);
-    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointermove", onWindowMove, { passive: true });
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
     return () => {
       document.body.style.userSelect = "";
       node.removeEventListener("pointerdown", onDown);
+      node.removeEventListener("pointermove", onLocalMove);
       node.removeEventListener("pointerleave", onLeave);
-      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointermove", onWindowMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
     };
-  }, [reduce]);
+  }, [reduce, live]);
+
+  const playing = live && pageVisible && !reduce;
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[min(48vw,540px)] max-lg:max-w-[min(76vw,360px)]">
@@ -494,17 +556,20 @@ export function InitiatorGlobe({ reduce = false }: { reduce?: boolean }) {
         role="img"
         aria-label="Dotted globe. Drag to rotate."
       >
-        <Canvas
-          camera={{ position: [0, 0.04, CAMERA_Z], fov: CAMERA_FOV, near: 0.1, far: 20 }}
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          style={{ background: "transparent" }}
-          frameloop="always"
-          resize={{ debounce: 120 }}
-        >
-          <LockedCamera />
-          <GlobeRig reduce={reduce} control={control} />
-        </Canvas>
+        {near ? (
+          <Canvas
+            camera={{ position: [0, 0.04, CAMERA_Z], fov: CAMERA_FOV, near: 0.1, far: 20 }}
+            dpr={quality.globeDpr}
+            gl={{ antialias: quality.globeAntialias, alpha: true, powerPreference: "high-performance" }}
+            style={{ background: "transparent" }}
+            frameloop={playing ? "always" : "demand"}
+            resize={{ debounce: 120 }}
+          >
+            <ResumeFrames active={playing} />
+            <LockedCamera />
+            <GlobeRig reduce={reduce} control={control} quality={quality} />
+          </Canvas>
+        ) : null}
       </div>
       <p
         className={`pointer-events-none absolute inset-x-0 -bottom-5 text-center font-mono text-[10px] tracking-[0.24em] text-faint uppercase transition-opacity duration-700 max-lg:hidden ${

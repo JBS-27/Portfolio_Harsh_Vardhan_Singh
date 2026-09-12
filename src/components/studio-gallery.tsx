@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -12,8 +12,10 @@ import { cx } from "@/lib/utils";
 
 export function StudioGallery() {
   const reduce = useReducedMotion();
+  const trackRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<StudioPiece | null>(null);
   const [paused, setPaused] = useState(false);
+  const [offscreen, setOffscreen] = useState(true);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -29,6 +31,17 @@ export function StudioGallery() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  useEffect(() => {
+    const node = trackRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setOffscreen(!entry.isIntersecting),
+      { rootMargin: "20% 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   function openPiece(piece: StudioPiece) {
     setOpen(piece);
@@ -50,6 +63,7 @@ export function StudioGallery() {
       </div>
 
       <div
+        ref={trackRef}
         className="relative mt-16 w-full py-8"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => {
@@ -60,7 +74,7 @@ export function StudioGallery() {
           <div
             className={cx(
               reduce ? "flex w-max px-5 sm:px-8" : "billboard-track",
-              !reduce && (paused || open) && "is-paused",
+              !reduce && (paused || open || offscreen) && "is-paused",
             )}
           >
             {(reduce ? [studioPieces] : [studioPieces, studioPieces]).map((set, setIndex) => (

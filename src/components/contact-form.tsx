@@ -17,12 +17,19 @@ export function ContactForm() {
 
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+    const windowLabel = String(data.window ?? "").trim();
+    const mission = String(data.message ?? "").trim();
+    const dispatch = {
+      name: String(data.name ?? ""),
+      email: String(data.email ?? ""),
+      message: windowLabel ? `Window: ${windowLabel}\n\n${mission}` : mission,
+    };
 
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(dispatch),
       });
       const payload = (await response.json()) as {
         ok?: boolean;
@@ -35,9 +42,9 @@ export function ContactForm() {
       }
 
       if (payload.fallback === "mailto") {
-        const subject = encodeURIComponent(`Portfolio note from ${String(data.name)}`);
+        const subject = encodeURIComponent(`Mission from ${dispatch.name}`);
         const body = encodeURIComponent(
-          `${String(data.message)}\n\n— ${String(data.name)} (${String(data.email)})`,
+          `${dispatch.message}\n\n— ${dispatch.name} (${dispatch.email})`,
         );
         window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
       }
@@ -47,7 +54,7 @@ export function ContactForm() {
       setMessage(
         payload.fallback === "mailto"
           ? "Opening your mail app — or write me directly."
-          : "Sent. I’ll get back to you.",
+          : "SYS // RECEIVED",
       );
     } catch {
       setStatus("error");
@@ -58,7 +65,7 @@ export function ContactForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <label className="block">
-        <span className="mb-2 block text-sm text-muted">Name</span>
+        <span className="mb-2 block type-meta text-faint">Signal</span>
         <input
           required
           name="name"
@@ -68,7 +75,7 @@ export function ContactForm() {
         />
       </label>
       <label className="block">
-        <span className="mb-2 block text-sm text-muted">Email</span>
+        <span className="mb-2 block type-meta text-faint">Channel</span>
         <input
           required
           type="email"
@@ -79,20 +86,37 @@ export function ContactForm() {
         />
       </label>
       <label className="block">
-        <span className="mb-2 block text-sm text-muted">Message</span>
+        <span className="mb-2 block type-meta text-faint">Window</span>
+        <select
+          required
+          name="window"
+          defaultValue=""
+          className="w-full border-b border-white/12 bg-transparent px-0 py-3 text-ink outline-none [color-scheme:dark] focus:border-ink/50"
+        >
+          <option value="" disabled>
+            Choose one
+          </option>
+          <option>Internship</option>
+          <option>Freelance</option>
+          <option>Collaboration</option>
+          <option>Full-time</option>
+        </select>
+      </label>
+      <label className="block">
+        <span className="mb-2 block type-meta text-faint">Mission</span>
         <textarea
           required
           name="message"
           rows={5}
           className="w-full resize-y border-b border-white/12 bg-transparent px-0 py-3 text-ink outline-none placeholder:text-faint focus:border-ink/50"
-          placeholder="What are we making?"
+          placeholder="What should get finished?"
         />
       </label>
       <MagneticButton
         type="submit"
         className="w-full border border-white/12 bg-ink text-black hover:bg-white disabled:opacity-60 sm:w-auto"
       >
-        {status === "sending" ? "Sending…" : "Send message"}
+        {status === "sending" ? "Sending…" : "Dispatch"}
       </MagneticButton>
       {message ? (
         <p

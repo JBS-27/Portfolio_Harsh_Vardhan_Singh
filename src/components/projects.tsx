@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { projects, type Project } from "@/lib/data";
+import { ExperimentStage } from "@/components/experiment-stage";
 import { ProjectCard } from "@/components/project-card";
 import { ProjectMedia } from "@/components/project-media";
 import { SectionHeading } from "@/components/section-heading";
@@ -76,7 +77,10 @@ export function Projects() {
         <p className="type-meta mt-16 text-faint">Experimental</p>
         <div className="mt-6 space-y-6">
           {experimental.map((project) => (
-            <ProjectCard key={project.slug} project={project} onOpen={openProject} />
+            <div key={project.slug} className="space-y-3">
+              <ProjectCard project={project} onOpen={openProject} />
+              <ExperimentStage project={project} />
+            </div>
           ))}
         </div>
       </div>

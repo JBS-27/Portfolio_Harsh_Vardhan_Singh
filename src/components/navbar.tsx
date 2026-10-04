@@ -117,6 +117,7 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center justify-end gap-4">
+          <NavClock />
           <span className="hidden font-mono text-[10px] tracking-[0.2em] text-faint uppercase lg:inline">
             {telemetry.system}
           </span>
@@ -159,5 +160,33 @@ export function Navbar() {
         ) : null}
       </AnimatePresence>
     </header>
+  );
+}
+
+function NavClock() {
+  const [label, setLabel] = useState("");
+
+  useEffect(() => {
+    const tick = () => {
+      const time = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      }).format(new Date());
+      setLabel(`${time} IST`);
+    };
+
+    tick();
+    const id = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  if (!label) return null;
+
+  return (
+    <span className="hidden font-mono text-[10px] tracking-[0.2em] text-faint uppercase lg:inline">
+      {label}
+    </span>
   );
 }

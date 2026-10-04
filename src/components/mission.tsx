@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { FadeIn } from "@/components/fade-in";
 import { SectionHeading } from "@/components/section-heading";
+import { projects, studioPieces } from "@/lib/data";
 
 export function Mission() {
   return (
@@ -44,7 +46,45 @@ export function Mission() {
             </div>
           </FadeIn>
         </div>
+
+        <Collision />
       </div>
     </section>
+  );
+}
+
+function Collision() {
+  const ledger = projects
+    .find((project) => project.slug === "nirmaan")
+    ?.caseStudy.decisions.find((decision) => decision.title === "Ledger before LLM");
+  const street = studioPieces.find((piece) => piece.id === "concept-13b");
+  if (!ledger || !street) return null;
+
+  return (
+    <div className="mt-20 grid overflow-hidden border border-white/10 lg:mt-28 lg:grid-cols-2">
+      <div className="flex flex-col justify-between gap-10 px-6 py-8 sm:px-8 sm:py-10">
+        <p className="type-meta text-faint">Same instinct / 001</p>
+        <div>
+          <p className="font-display text-[clamp(2rem,4vw,3.4rem)] leading-[0.95] tracking-[-0.045em] text-ink">
+            {ledger.title}
+          </p>
+          <p className="mt-5 max-w-md text-[1.02rem] leading-relaxed text-muted">{ledger.body}</p>
+        </div>
+        <p className="type-meta text-faint">Nirmaan</p>
+      </div>
+      <figure className="relative min-h-[280px] border-t border-white/10 lg:border-t-0 lg:border-l">
+        <Image
+          src={street.src}
+          alt={`${street.brand} — ${street.campaign}`}
+          fill
+          sizes="(min-width: 1024px) 46vw, 100vw"
+          className="object-cover"
+        />
+        <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent px-6 py-5 sm:px-8">
+          <p className="type-meta text-muted">{street.brand}</p>
+          <p className="mt-2 font-display text-2xl tracking-[-0.04em] text-ink">{street.caption}</p>
+        </figcaption>
+      </figure>
+    </div>
   );
 }

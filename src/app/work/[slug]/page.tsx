@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { CaseInstrument } from "@/components/case-instruments";
 import { Footer } from "@/components/footer";
 import { ProjectMedia } from "@/components/project-media";
 import { getProject, projects } from "@/lib/data";
@@ -92,6 +93,8 @@ export default async function CaseStudyPage({ params }: PageProps) {
             <div className="absolute inset-0 bg-linear-to-t from-black/35 to-transparent" />
           </div>
         </div>
+
+        <CaseInstrument slug={project.slug} />
 
         <section className="mt-16 grid gap-10 sm:grid-cols-2">
           <div>

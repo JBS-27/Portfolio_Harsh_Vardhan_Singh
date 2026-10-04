@@ -207,7 +207,7 @@ body {
 .billboard-track {
   display: flex;
   width: max-content;
-  animation: billboard-marquee 120s linear infinite;
+  animation: billboard-marquee var(--billboard-duration, 120s) linear infinite;
   will-change: transform;
 }
 
@@ -219,6 +219,25 @@ body {
 
 .billboard-track.is-paused {
   animation-play-state: paused;
+}
+
+.billboard-track.is-driving:not(.is-paused) .board-caption {
+  opacity: 0;
+}
+
+.now-beacon {
+  box-shadow: 0 0 12px rgb(240 197 106 / 0.9);
+  animation: now-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes now-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

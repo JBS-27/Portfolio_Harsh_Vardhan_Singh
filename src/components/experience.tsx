@@ -27,8 +27,12 @@ export function Experience() {
               <FadeIn delay={index * 0.03}>
                 <div className="grid gap-5 py-10 sm:grid-cols-[200px_1fr] sm:py-12">
                   <div>
-                    <p className="type-meta text-faint">
-                      {kindLabel[item.kind]} {String(index + 1).padStart(2, "0")}
+                    <p className="type-meta flex items-center gap-2 text-faint">
+                      {index === 0 ? (
+                        <span className="now-beacon inline-block size-1.5 rounded-full bg-accent" />
+                      ) : null}
+                      {index === 0 ? "Now" : kindLabel[item.kind]}{" "}
+                      {String(index + 1).padStart(2, "0")}
                     </p>
                     <p className="mt-3 text-sm text-muted">{item.dates}</p>
                     {item.location ? (
